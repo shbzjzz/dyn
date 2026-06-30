@@ -1133,6 +1133,7 @@ function parseEpicSportsHTML(html) {
 
   return matches;
 }
+
 /* ── HELLOSPORTS PARSER (msw-card data-attributes) ── */
 function parseHelloSportsHTML(html) {
   const matches = [];
@@ -1418,8 +1419,14 @@ function playEmbed(url, m) {
   $playerWrap.style.display = '';
   $iframe.style.display = 'block';
   $video.style.display = 'none';
-  hideOverlay();
+  // Show loading overlay while worker resolves the stream chain
+  showOverlay('RESOLVING STREAM...');
   $iframe.src = url;
+  $iframe.onload = function() {
+    hideOverlay();
+  };
+  // Fallback: hide overlay after 15s even if onload doesn't fire
+  setTimeout(() => { hideOverlay(); }, 15000);
   if (m) {
     const name = `${m.team1} vs ${m.team2}`;
     $infoName.textContent = name;
