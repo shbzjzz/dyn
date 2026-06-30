@@ -1023,9 +1023,7 @@ function loadDashStream(url, ch) {
    So we scrape directly from the browser via CORS proxy.
    ══════════════════════════════════════════ */
 const CORS_PROXIES = [
-  // Try direct first (some Blogger sites allow CORS)
-  url => url,
-  // allorigins /get returns JSON: { contents: "..." }
+  // allorigins /get returns JSON: { contents: "..." } — most reliable
   url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
   // corsproxy.io
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -1043,7 +1041,7 @@ async function fetchViaCORS(targetUrl) {
     try {
       const proxyUrl = proxyFn(targetUrl);
       const controller = new AbortController();
-      const tid = setTimeout(() => controller.abort(), 10000);
+      const tid = setTimeout(() => controller.abort(), 12000);
       const res = await fetch(proxyUrl, { signal: controller.signal });
       clearTimeout(tid);
       if (!res.ok) continue;
@@ -1058,7 +1056,7 @@ async function fetchViaCORS(targetUrl) {
         if (text.length > 500) return text;
       }
     } catch(e) {
-      console.warn(`[CORS] Proxy failed:`, e.message);
+      // Silent fail — CORS proxies are unreliable, just try next one
     }
   }
   return null;
@@ -1066,41 +1064,22 @@ async function fetchViaCORS(targetUrl) {
 
 /* ── EPICSPORTS PARSER (match-event divs) ── */
 function parseEpicSportsHTML(html) {
-  const clean = html
-    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
-
+  const clean = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
   const matches = [];
   const seen = new Set();
-
   const openerRe = /<div[^>]*class="[^"]*match-event[^"]*"[^>]*data-result="([^"]*)"/gi;
   let om;
-
   while ((om = openerRe.exec(clean)) !== null) {
     const resultAttr = om[1];
     const start = om.index;
-
-    let depth = 0;
-    let i = start;
-    let end = -1;
-
+    let depth = 0, i = start, end = -1;
     while (i < clean.length) {
-      if (clean.startsWith('<div', i)) {
-        depth++;
-      } else if (clean.startsWith('</div>', i)) {
-        depth--;
-        if (depth === 0) {
-          end = i + 6;
-          break;
-        }
-      }
+      if (clean.substr(i, 4) === '<div') depth++;
+      else if (clean.substr(i, 6) === '</div>') { depth--; if (depth === 0) { end = i + 6; break; } }
       i++;
     }
-
     if (end < 0) continue;
-
     const block = clean.substring(start, end);
-
     const t1 = block.match(/first-team[\s\S]*?team-name[^>]*>\s*([^<]+)/);
     const t2 = block.match(/left-team[\s\S]*?team-name[^>]*>\s*([^<]+)/);
     const timeM = block.match(/match-hour[^>]*>\s*([^<]+)/);
@@ -1108,19 +1087,13 @@ function parseEpicSportsHTML(html) {
     const startM = block.match(/data-start="([^"]+)"/);
     const endM = block.match(/data-gameends="([^"]+)"/);
     const roundM = block.match(/match-info[\s\S]*?<li><span>([^<]+)<\/span><\/li>/);
-
     const team1 = t1 ? t1[1].trim() : '';
     const team2 = t2 ? t2[1].trim() : '';
-
     const key = `${team1}-${team2}`;
-
     if (!team1 || !team2 || seen.has(key)) continue;
-
     seen.add(key);
-
     matches.push({
-      team1,
-      team2,
+      team1, team2,
       time: timeM ? timeM[1].trim() : '',
       result: resultAttr || 'vs',
       link: linkM ? linkM[1] : '',
@@ -1130,7 +1103,6 @@ function parseEpicSportsHTML(html) {
       source: 'epicsports'
     });
   }
-
   return matches;
 }
 
