@@ -193,6 +193,17 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .orb-2{width:400px;height:400px;opacity:0.05;background:radial-gradient(circle,rgba(56,189,248,0.6),transparent 70%);bottom:-10%;right:-5%;animation:floatOrbs 25s ease-in-out infinite reverse}
 .orb-3{width:300px;height:300px;opacity:0.04;background:radial-gradient(circle,rgba(244,114,182,0.6),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:floatOrbs 30s ease-in-out infinite}
 
+
+.cd-time{font-size:13px;font-weight:600;letter-spacing:0.1em;font-family:var(--font-heading);color:var(--text-secondary);display:flex;align-items:center;gap:6px;margin-top:2px}
+.cd-time i{font-size:11px;color:var(--accent)}
+.cd-notice{font-size:10px;font-weight:500;letter-spacing:0.08em;font-family:var(--font-body);color:var(--accent);padding:6px 14px;border-radius:999px;background:var(--accent-dim);border:1px solid rgba(167,139,250,0.25);text-align:center;max-width:90%;line-height:1.4;margin-top:4px}
+.cd-notice i{margin-right:4px}
+.flag-emoji{font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+.flag-emoji-sm{font-size:16px;line-height:1}
+.flag-emoji-xs{font-size:14px;line-height:1}
+.channel-item.next-match{border-color:rgba(167,139,250,0.35);background:linear-gradient(135deg,rgba(167,139,250,0.1),rgba(167,139,250,0.03))}
+.channel-item.next-match::after{content:'NEXT';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:8px;font-weight:700;letter-spacing:0.1em;color:var(--accent);background:var(--accent-dim);padding:2px 6px;border-radius:4px;border:1px solid rgba(167,139,250,0.3);font-family:var(--font-heading)}
+.ch-match-time{font-size:9px;font-weight:500;letter-spacing:0.06em;color:var(--accent);font-family:var(--font-heading);margin-top:1px}
 @media(max-width:900px){
   .mobile-menu-btn{display:flex}
   #sidebar{position:absolute;top:0;bottom:0;left:0;transform:translateX(-100%)}
@@ -259,6 +270,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
                   <div class="cd-vs" id="cd-vs">VS</div>
                   <div class="cd-team"><img class="cd-team-logo" id="cd-t2-logo" src="" onerror="this.style.display='none'" alt=""><span class="cd-team-name" id="cd-t2-name"></span></div>
                 </div>
+                <div class="cd-time" id="cd-time" style="display:none"><i class="fa-regular fa-clock"></i><span id="cd-time-text"></span></div>
+                <div class="cd-notice" id="cd-notice" style="display:none"><i class="fa-solid fa-circle-info"></i>Streaming links will be available 10 minutes before kickoff</div>
                 <div class="cd-score-row" id="cd-score-row" style="display:none">
                   <span class="cd-score-num" id="cd-t1-score">0</span>
                   <span class="cd-score-sep">-</span>
@@ -331,12 +344,20 @@ var CHANNELS=[];
      https://nexustv-worker.your-sub.workers.dev
   4. Replace WORKER_URL below with your deployed URL
 */
-var WORKER_URL='https://m3u.shabeershz21.workers.dev';
+var WORKER_URL='https://nexustv-worker.your-sub.workers.dev';
 var WORKER_DEPLOYED=WORKER_URL.indexOf('your-sub')===-1;
 var PRE_MATCH_MINUTES=13;
 var WC_LOGO='https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png';
 var REFRESH_INTERVAL_MS=60000;
 function proxyImg(u){if(!u||!WORKER_DEPLOYED)return'';return WORKER_URL+'/img?url='+encodeURIComponent(u);}
+/* ═══ COUNTRY FLAG EMOJI — replaces ESPN CDN logos ═══ */
+var COUNTRY_MAP={'AFG':'AF','ALB':'AL','ALG':'DZ','ARG':'AR','ARM':'AM','AUS':'AU','AUT':'AT','AZE':'AZ','BHR':'BH','BGD':'BD','BEL':'BE','BEN':'BJ','BIH':'BA','BOL':'BO','BRA':'BR','BUL':'BG','CAM':'KH','CAN':'CA','CHI':'CL','CHN':'CN','COL':'CO','CRC':'CR','CRO':'HR','CUB':'CU','CYP':'CY','CZE':'CZ','DEN':'DK','ECU':'EC','EGY':'EG','ENG':'GB','ESP':'ES','EST':'EE','FIJ':'FJ','FIN':'FI','FRA':'FR','GAB':'GA','GER':'DE','GHA':'GH','GRE':'GR','GUA':'GT','GUI':'GN','HON':'HN','HUN':'HU','IND':'IN','INA':'ID','IRI':'IR','IRQ':'IQ','IRL':'IE','ISL':'IS','ISR':'IL','ITA':'IT','JAM':'JM','JPN':'JP','JOR':'JO','KAZ':'KZ','KEN':'KE','KOR':'KR','KSA':'SA','KUW':'KW','LBY':'LY','MAS':'MY','MEX':'MX','MNE':'ME','MAR':'MA','NED':'NL','NGA':'NG','NZL':'NZ','NIR':'GB','NOR':'NO','OMA':'OM','PAN':'PA','PAR':'PY','PER':'PE','PHI':'PH','POL':'PL','POR':'PT','QAT':'QA','ROU':'RO','RUS':'RU','SCO':'GB','SEN':'SN','SRB':'RS','SVK':'SK','SVN':'SI','RSA':'ZA','SUI':'CH','SWE':'SE','SYR':'SY','TJK':'TJ','THA':'TH','TUN':'TN','TUR':'TR','UKR':'UA','UAE':'AE','URU':'UY','USA':'US','UZB':'UZ','VEN':'VE','VIE':'VN','WAL':'GB','YEM':'YE','ZAM':'ZM','CIV':'CI','CMR':'CM','CGO':'CG','COD':'CD','EQG':'GQ','GMB':'GM','MDG':'MG','MLI':'ML','MOZ':'MZ','NAM':'NA','RWA':'RW','SDN':'SD','TOG':'TG','UGA':'UG','ZIM':'ZW','ANT':'NL','PUR':'PR','TTO':'TT','HAI':'HT','BLZ':'BZ','GUY':'GY','SUR':'SR'};
+var NAME_MAP={'France':'FRA','Brazil':'BRA','Argentina':'ARG','Germany':'GER','Spain':'ESP','England':'ENG','United States':'USA','Australia':'AUS','Japan':'JPN','South Korea':'KOR','Portugal':'POR','Belgium':'BEL','Uruguay':'URU','Colombia':'COL','Croatia':'CRO','Serbia':'SRB','Switzerland':'SUI','Denmark':'DEN','Netherlands':'NED','Poland':'POL','Senegal':'SEN','Ghana':'GHA','Cameroon':'CMR','Nigeria':'NGA','Tunisia':'TUN','Morocco':'MAR','Iran':'IRI','Saudi Arabia':'KSA','Canada':'CAN','Costa Rica':'CRC','Panama':'PAN','Mexico':'MEX','Ecuador':'ECU','Norway':'NOR','Sweden':'SWE','Ivory Coast':'CIV','Cote d\'Ivoire':'CIV','Wales':'WAL','Scotland':'SCO','Turkey':'TUR','China':'CHN','India':'IND','Russia':'RUS','Ukraine':'UKR','Italy':'ITA','Republic of Ireland':'IRL','Austria':'AUT','Czech Republic':'CZE','Romania':'ROU','Hungary':'HUN','Slovakia':'SVK','Slovenia':'SVN','Bosnia and Herzegovina':'BIH','Montenegro':'MNE','Albania':'ALB','Bulgaria':'BUL','Finland':'FIN','Iceland':'ISL','North Macedonia':'MKD','Greece':'GRE','Israel':'ISR','Egypt':'EGY','South Africa':'RSA','Algeria':'ALG','Togo':'TOG','Mali':'MLI','Guinea':'GUI','DR Congo':'COD','Congo':'CGO','Gabon':'GAB','Benin':'BEN','Zambia':'ZAM','Kenya':'KEN','Tanzania':'TZA','Ghana':'GHA','Uganda':'UGA','Nigeria':'NGA','Morocco':'MAR','Tunisia':'TUN','Egypt':'EGY','Senegal':'SEN','Cameroon':'CMR','Madagascar':'MDG','Mozambique':'MOZ','Namibia':'NAM','Rwanda':'RWA','Sudan':'SDN','Zimbabwe':'ZIM','Venezuela':'VEN','Chile':'CHI','Peru':'PER','Paraguay':'PAR','Bolivia':'BOL','Ecuador':'ECU','Colombia':'COL','Uruguay':'URU','Brazil':'BRA','Argentina':'ARG','Honduras':'HON','Jamaica':'JAM','Trinidad and Tobago':'TTO','Haiti':'HAI','Guatemala':'GUA','Panama':'PAN','Costa Rica':'CRC','El Salvador':'SLV','Cuba':'CUB','United States':'USA','Mexico':'MEX','Canada':'CAN','Australia':'AUS','New Zealand':'NZL','Papua New Guinea':'PNG','New Caledonia':'NCL','Tahiti':'TAH','Solomon Islands':'SOL','Fiji':'FIJ','Philippines':'PHI','Vietnam':'VIE','Thailand':'THA','Indonesia':'INA','Malaysia':'MAS','Myanmar':'MYA','China':'CHN','Chinese Taipei':'TPE','Japan':'JPN','South Korea':'KOR','North Korea':'PRK','India':'IND','Uzbekistan':'UZB','Saudi Arabia':'KSA','United Arab Emirates':'UAE','Qatar':'QAT','Iraq':'IRQ','Oman':'OMA','Jordan':'JOR','Syria':'SYR','Lebanon':'LBN','Palestine':'PLE','Yemen':'YEM','Bahrain':'BHR','Kuwait':'KUW','Tajikistan':'TJK','Kyrgyzstan':'KGZ','Turkmenistan':'TKM','Afghanistan':'AFG','Armenia':'ARM','Azerbaijan':'AZE','Georgia':'GEO','Kazakhstan':'KAZ'};
+function getFlag(nameOrCode){if(!nameOrCode)return'\u26BD';var upper=nameOrCode.trim().toUpperCase();if(COUNTRY_MAP[upper])return codeToFlag(COUNTRY_MAP[upper]);var mapped=NAME_MAP[nameOrCode.trim()];if(mapped&&COUNTRY_MAP[mapped])return codeToFlag(COUNTRY_MAP[mapped]);if(upper.length===2&&/^[A-Z]{2}$/.test(upper))return codeToFlag(upper);if(upper.length===3&&/^[A-Z]{3}$/.test(upper)){for(var k in COUNTRY_MAP){if(k===upper)return codeToFlag(COUNTRY_MAP[k]);}var first3=upper.substring(0,3);var short2=upper.substring(0,2);if(COUNTRY_MAP[short2])return codeToFlag(COUNTRY_MAP[short2]);}return'\u26BD';}
+function codeToFlag(code){return code.toUpperCase().split('').map(function(c){return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65);}).join('');}
+function formatMatchTime(ts){if(!ts)return'';var d=new Date(ts);if(isNaN(d.getTime()))return'';return d.toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});}
+function formatMatchTimeShort(ts){if(!ts)return'';var d=new Date(ts);if(isNaN(d.getTime()))return'';return d.toLocaleString(undefined,{hour:'2-digit',minute:'2-digit',timeZoneName:'short'});}
+
 
 /* ═══ STATE ═══ */
 var activeId=null,selectedCat='All',searchQ='',sidebarOpen=false,currentView='tv';
@@ -369,6 +390,8 @@ var $cdTimer=document.getElementById('cd-timer'),$cdLabel=document.getElementByI
 var $cdLiveBadge=document.getElementById('cd-live-badge');
 var $cdStatus=document.getElementById('cd-status'),$cdLoading=document.getElementById('cd-loading');
 var $cdError=document.getElementById('cd-error'),$cdRetry=document.getElementById('cd-retry');
+var $cdTime=document.getElementById('cd-time'),$cdTimeText=document.getElementById('cd-time-text');
+var $cdNotice=document.getElementById('cd-notice');
 
 /* ═══ CATEGORIES ═══ */
 function getCategories(){return['All'].concat(Array.from(new Set(CHANNELS.map(function(c){return c.category}))));}
@@ -378,7 +401,7 @@ function renderCatChips(){var cats=getCategories();$catChips.innerHTML=cats.map(
 function getFiltered(){var q=searchQ.toLowerCase();return CHANNELS.filter(function(c){var catOk=selectedCat==='All'||c.category===selectedCat;var searchOk=c.name.toLowerCase().indexOf(q)!==-1||c.category.toLowerCase().indexOf(q)!==-1;return catOk&&searchOk;});}
 
 /* ═══ RENDER CHANNEL LIST ═══ */
-function renderChannels(){var filtered=getFiltered();$chCount.textContent=filtered.length;if(filtered.length===0){$channelList.innerHTML='<div class="no-channels"><i class="fa-solid fa-search"></i><p>No channels found</p></div>';return;}$channelList.innerHTML=filtered.map(function(ch){var isActive=ch.id===activeId;var dashBadge=ch.isDash?'<span class="dash-badge">DASH</span>':'';var logoHtml=ch.logo?'<img src="'+ch.logo+'" alt="'+ch.name+'" onerror="this.style.display=\'none\'">':'<i class="fa-solid fa-tv"></i>';return'<div class="channel-item '+(isActive?'active':'')+'" data-id="'+ch.id+'"><div class="ch-logo-box">'+logoHtml+'</div><div class="ch-info"><div class="ch-name '+(isActive?'active-name':'')+'">'+ch.name+dashBadge+'</div><div class="ch-cat">'+ch.category+'</div></div><span class="ch-num">'+ch.number+'</span><div class="ch-dot '+(isActive?'active-dot':'')+'"></div></div>';}).join('');}
+function renderChannels(){var filtered=getFiltered();$chCount.textContent=filtered.length;if(filtered.length===0){$channelList.innerHTML='<div class="no-channels"><i class="fa-solid fa-search"></i><p>No channels found</p></div>';return;}$channelList.innerHTML=filtered.map(function(ch){var isActive=ch.id===activeId;var isNext=ch.isNextMatch&&!isActive;var dashBadge=ch.isDash?'<span class="dash-badge">DASH</span>':'';var logoHtml=ch.logo?'<img src="'+ch.logo+'" alt="'+ch.name+'" onerror="this.style.display=\'none\'">':'<i class="fa-solid fa-tv"></i>';var cls='channel-item'+(isActive?' active':'')+(isNext?' next-match':'');var timeHtml=ch.timeLabel?'<div class="ch-match-time">'+ch.timeLabel+'</div>':'';return'<div class="'+cls+'" data-id="'+ch.id+'"><div class="ch-logo-box">'+logoHtml+'</div><div class="ch-info"><div class="ch-name '+(isActive?'active-name':'')+'">'+ch.name+dashBadge+'</div><div class="ch-cat">'+ch.category+'</div>'+timeHtml+'</div><span class="ch-num">'+ch.number+'</span><div class="ch-dot '+(isActive?'active-dot':'')+'"></div></div>';}).join('');}
 
 /* ═══ OVERLAY ═══ */
 function showOverlay(msg){$overlayMsg.textContent=msg;$overlayProxy.textContent='PROXY: '+(proxyOn?'ON':'OFF');$playerOverlay.classList.remove('hidden');}
@@ -425,9 +448,9 @@ function renderScoreboard(){
     var state=ev.status.type.state;
     var statusCls=state==='in'?'live':state==='post'?'done':'sched';
     var clock=ev.status.displayClock||'';
-    var logo1=proxyImg(t1.team.logo),logo2=proxyImg(t2.team.logo);
     var clockHtml=clock?' <span style="color:var(--text-faint);font-size:9px;margin-left:4px">'+clock+'</span>':'';
-    return '<div class="match-card-glass"><div class="match-header"><span class="match-comp">'+ev.name+'</span><span class="match-status '+statusCls+'">'+ev.status.type.shortDetail+clockHtml+'</span></div><div class="match-body"><div class="team-col">'+(logo1?'<img class="team-logo" src="'+logo1+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span class="team-name">'+t1.team.shortDisplayName+'</span></div><div class="score-box">'+t1.score+'\u2013'+t2.score+'</div><div class="team-col">'+(logo2?'<img class="team-logo" src="'+logo2+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span class="team-name">'+t2.team.shortDisplayName+'</span></div></div></div>';
+    var flag1=getFlag(t1.team.shortDisplayName),flag2=getFlag(t2.team.shortDisplayName);
+    return '<div class="match-card-glass"><div class="match-header"><span class="match-comp">'+ev.name+'</span><span class="match-status '+statusCls+'">'+ev.status.type.shortDetail+clockHtml+'</span></div><div class="match-body"><div class="team-col"><span class="flag-emoji-sm">'+flag1+'</span><span class="team-name">'+t1.team.shortDisplayName+'</span></div><div class="score-box">'+t1.score+'\u2013'+t2.score+'</div><div class="team-col"><span class="flag-emoji-sm">'+flag2+'</span><span class="team-name">'+t2.team.shortDisplayName+'</span></div></div></div>';
   }).join('');
 }
 function renderStandings(){
@@ -436,8 +459,8 @@ function renderStandings(){
     var teams=(group.standings&&group.standings.entries)||[];
     return '<div class="group-card-glass"><h3 class="group-title">'+group.name+'</h3><table class="group-table"><thead><tr><th colspan="2">Team</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>'+teams.map(function(t,ti){
       var getStat=function(n){var s=t.stats&&t.stats.find(function(s){return s.name===n;});return s?s.value:'\u2014';};
-      var logo=(t.team.logos&&t.team.logos[0])?proxyImg(t.team.logos[0].href):'';
-      return '<tr><td style="padding-right:4px;color:var(--text-secondary)">'+(ti+1)+'</td><td><div class="team-cell">'+(logo?'<img src="'+logo+'" onerror="this.remove()">':'')+'<span>'+t.team.displayName+'</span></div></td><td>'+getStat('wins')+'</td><td>'+getStat('ties')+'</td><td>'+getStat('losses')+'</td><td class="pts-cell">'+getStat('points')+'</td></tr>';
+      var flag=getFlag(t.team.displayName||t.team.shortDisplayName||t.team.abbreviation||'');
+      return '<tr><td style="padding-right:4px;color:var(--text-secondary)">'+(ti+1)+'</td><td><div class="team-cell"><span class="flag-emoji-xs">'+flag+'</span><span>'+t.team.displayName+'</span></div></td><td>'+getStat('wins')+'</td><td>'+getStat('ties')+'</td><td>'+getStat('losses')+'</td><td class="pts-cell">'+getStat('points')+'</td></tr>';
     }).join('')+'</tbody></table></div>';
   }).join('');
 }
@@ -464,7 +487,7 @@ $cdRetry.addEventListener('click',function(){$cdError.style.display='none';$cdRe
    ════════════════════════════════════════════════════════════════ */
 
 function showCountdownError(msg){$cdLoading.style.display='none';$cdError.textContent=msg;$cdError.style.display='block';$cdRetry.style.display='block';}
-function cdHideExtras(){$cdTeamsRow.style.display='none';$cdScoreRow.style.display='none';$cdVs.style.display='none';$cdLiveBadge.style.display='none';$cdTimer.classList.remove('cd-live-timer');}
+function cdHideExtras(){$cdTeamsRow.style.display='none';$cdScoreRow.style.display='none';$cdVs.style.display='none';$cdLiveBadge.style.display='none';$cdTimer.classList.remove('cd-live-timer');$cdTime.style.display='none';$cdNotice.style.display='none';}
 
 /* ═══ SYNC LIVE OVERLAY — updates scores/clock from scoreboard refresh ═══ */
 function syncLiveOverlay(){
@@ -481,10 +504,18 @@ function syncLiveOverlay(){
 /* ═══ FETCH WC MATCHES — hellosports first, ESPN fallback ═══ */
 async function fetchWCMatches(){
   if(!WORKER_DEPLOYED){showCountdownError('Deploy worker.js to Cloudflare Workers and set WORKER_URL.');return;}
-  /* Strategy 1: hellosports.io via worker */
+  /* Strategy 1: hellosports.live via worker */
   try{
     var res=await fetch(WORKER_URL+'/matches');
-    if(res.ok){var data=await res.json();if(!data.error&&data.matches&&data.matches.length>0){wcMatches=data.matches;console.log('[WC] Hellosports: '+wcMatches.length+' matches');processWCMatches();return;}}
+    if(res.ok){var data=await res.json();if(!data.error&&data.matches&&data.matches.length>0){
+      wcMatches=data.matches.map(function(m){
+        if(!m.timeLabel&&m.kickoffTime)m.timeLabel=formatMatchTimeShort(m.kickoffTime);
+        if(!m.timeLabel)m.timeLabel=m.timeString||'TBD';
+        return m;
+      });
+      console.log('[WC] Hellosports: '+wcMatches.length+' matches');
+      injectMatchChannels(wcMatches);
+      processWCMatches();return;}}
   }catch(e){console.warn('[WC] /matches failed, trying /scoreboard:',e);}
   /* Strategy 2: ESPN scoreboard via worker */
   try{
@@ -496,13 +527,17 @@ async function fetchWCMatches(){
       var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
       var kickoffTime=ev.date?new Date(ev.date).getTime():null;
       var state=ev.status.type.state;
-      return{id:'espn-'+i,name:t1.team.shortDisplayName+' vs '+t2.team.shortDisplayName,
+      var matchName=t1.team.shortDisplayName+' vs '+t2.team.shortDisplayName;
+      var timeLabel=kickoffTime?formatMatchTimeShort(kickoffTime):(state==='in'?'LIVE NOW':(state==='post'?'FT':'TBD'));
+      return{id:'espn-'+i,name:matchName,
         team1:t1.team.shortDisplayName,team2:t2.team.shortDisplayName,
-        t1Logo:t1.team.logo||'',t2Logo:t2.team.logo||'',
-        url:'',kickoffTime:kickoffTime,timeString:ev.date||'',
+        t1Logo:'',t2Logo:'',
+        url:'',kickoffTime:kickoffTime,timeString:ev.date||'',timeLabel:timeLabel,
         isLive:state==='in',isPost:state==='post',_espn:ev};
     });
     console.log('[WC] ESPN fallback: '+wcMatches.length+' matches');
+    /* Add all matches to sidebar with time info */
+    injectMatchChannels(wcMatches);
     processWCMatches();
   }catch(err){console.error('[WC] All sources failed:',err);showCountdownError('Cannot reach match servers.');}
 }
@@ -512,14 +547,14 @@ function processWCMatches(){
   var now=Date.now();
   /* Live matches first */
   var live=wcMatches.filter(function(m){return m.isLive;});
-  if(live.length>0){nextMatch=live[0];showLiveMatch(nextMatch);return;}
+  if(live.length>0){nextMatch=live[0];injectMatchChannels(wcMatches);showLiveMatch(nextMatch);return;}
   /* Upcoming */
   var upcoming=wcMatches.filter(function(m){return m.kickoffTime&&m.kickoffTime>now;}).sort(function(a,b){return a.kickoffTime-b.kickoffTime;});
-  if(upcoming.length>0){nextMatch=upcoming[0];showUpcomingMatch(nextMatch);return;}
+  if(upcoming.length>0){nextMatch=upcoming[0];injectMatchChannels(wcMatches);showUpcomingMatch(nextMatch);return;}
   /* Finished — show last one */
   var post=wcMatches.filter(function(m){return m.isPost;});
-  if(post.length>0){nextMatch=post[post.length-1];showFinishedMatch(nextMatch);return;}
-  showCountdownError('No FIFA WC 2026 matches found.');
+  if(post.length>0){nextMatch=post[post.length-1];injectMatchChannels(wcMatches);showFinishedMatch(nextMatch);return;}
+  showCountdownError('No FIFA WC 2026 matches found today. Check back later!');
 }
 
 /* ═══ SHOW UPCOMING MATCH ═══ */
@@ -527,12 +562,20 @@ function showUpcomingMatch(m){
   var prevId=nextMatch?nextMatch.id:null;nextMatch=m;
   if(m.id!==prevId)wcStreamFetched=false;
   $cdMatchName.textContent=m.name;cdHideExtras();
-  if(m.t1Logo||m.t2Logo){
-    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
-    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
-    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
-    $cdVs.style.display='';$cdTeamsRow.style.display='flex';
+  /* Flag emojis instead of ESPN CDN images */
+  $cdT1Logo.style.display='none';$cdT2Logo.style.display='none';
+  $cdT1Name.textContent=(m.team1?getFlag(m.team1)+' ':'')+m.team1;
+  $cdT2Name.textContent=(m.team2?getFlag(m.team2)+' ':'')+m.team2;
+  $cdT1Name.style.fontSize='16px';$cdT2Name.style.fontSize='16px';
+  $cdVs.style.display='';$cdTeamsRow.style.display='flex';
+  /* Show match time */
+  if(m.kickoffTime){
+    $cdTimeText.textContent=formatMatchTime(m.kickoffTime);$cdTime.style.display='flex';
+  }else if(m.timeString){
+    $cdTimeText.textContent=m.timeString;$cdTime.style.display='flex';
   }
+  /* Show 10-min notice */
+  $cdNotice.style.display='block';
   $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';$cdStatus.style.display='none';
   $cdOverlay.classList.add('visible');hideOverlay();
   startCountdown();checkPreMatch();
@@ -543,20 +586,21 @@ function showLiveMatch(m){
   var prevId=nextMatch?nextMatch.id:null;nextMatch=m;
   if(m.id!==prevId)wcStreamFetched=false;
   $cdMatchName.textContent=m.name;cdHideExtras();
-  if(m.t1Logo||m.t2Logo){
-    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
-    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
-    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
-    $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
-  }
+  /* Flag emojis */
+  $cdT1Logo.style.display='none';$cdT2Logo.style.display='none';
+  $cdT1Name.textContent=(m.team1?getFlag(m.team1)+' ':'')+m.team1;
+  $cdT2Name.textContent=(m.team2?getFlag(m.team2)+' ':'')+m.team2;
+  $cdT1Name.style.fontSize='16px';$cdT2Name.style.fontSize='16px';
+  $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
   /* Show live score */
   var ev=m._espn;if(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
     $cdT1Score.textContent=t1.score||'0';$cdT2Score.textContent=t2.score||'0';$cdScoreRow.style.display='flex';
     var clock=ev.status.displayClock||'';var detail=ev.status.type.shortDetail||'';
     $cdTimer.textContent=clock||'LIVE';$cdTimer.classList.add('cd-live-timer');
-    $cdLabel.textContent=detail==='HT'?'HALF TIME':'IN PROGRESS';
+    $cdLabel.textContent=detail==='HT'?'HALF TIME':detail==='FT'?'FULL TIME':'IN PROGRESS';
   }else{$cdTimer.textContent='LIVE NOW';$cdTimer.classList.add('cd-live-timer');$cdLabel.textContent='IN PROGRESS';}
-  $cdLiveBadge.style.display='inline-flex';$cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';
+  $cdLiveBadge.style.display='inline-flex';$cdNotice.style.display='none';
+  $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';
   $cdOverlay.classList.add('visible');hideOverlay();
   wcStreamFetched=false;fetchWCStream();
 }
@@ -565,16 +609,16 @@ function showLiveMatch(m){
 function showFinishedMatch(m){
   nextMatch=m;cdHideExtras();
   $cdMatchName.textContent=m.name;
-  if(m.t1Logo||m.t2Logo){
-    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
-    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
-    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
-    $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
-  }
+  $cdT1Logo.style.display='none';$cdT2Logo.style.display='none';
+  $cdT1Name.textContent=(m.team1?getFlag(m.team1)+' ':'')+m.team1;
+  $cdT2Name.textContent=(m.team2?getFlag(m.team2)+' ':'')+m.team2;
+  $cdT1Name.style.fontSize='16px';$cdT2Name.style.fontSize='16px';
+  $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
   var ev=m._espn;if(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
     $cdT1Score.textContent=t1.score||'0';$cdT2Score.textContent=t2.score||'0';$cdScoreRow.style.display='flex';
   }
   $cdTimer.textContent='FT';$cdTimer.classList.remove('cd-live-timer');$cdLabel.textContent='FULL TIME';
+  $cdNotice.style.display='none';
   $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';$cdStatus.style.display='none';
   $cdOverlay.classList.add('visible');hideOverlay();
 }
@@ -589,8 +633,8 @@ function startCountdown(){
     var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
     $cdTimer.textContent=(h>0?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
     $cdTimer.classList.remove('cd-live-timer');
-    if(diff<=PRE_MATCH_MINUTES*60000){$cdLabel.textContent='STREAM AVAILABLE SOON';$cdStatus.style.display='block';checkPreMatch();}
-    else{$cdLabel.textContent='UNTIL KICKOFF';$cdStatus.style.display='none';}
+    if(diff<=PRE_MATCH_MINUTES*60000){$cdLabel.textContent='STREAM AVAILABLE SOON';$cdStatus.style.display='block';$cdNotice.style.display='none';checkPreMatch();}
+    else{$cdLabel.textContent='UNTIL KICKOFF';$cdStatus.style.display='none';$cdNotice.style.display='block';}
   }
   tick();countdownInterval=setInterval(tick,1000);
 }
@@ -599,7 +643,14 @@ function checkPreMatch(){if(!nextMatch||wcStreamFetched)return;var diff=nextMatc
 
 async function fetchWCStream(){
   if(wcStreamFetched||!nextMatch)return;
-  if(!nextMatch.url){$cdLoading.style.display='none';showCountdownError('No stream link for this match.');return;}
+  if(!nextMatch.url){$cdLoading.style.display='none';
+    var diff=nextMatch.kickoffTime?nextMatch.kickoffTime-Date.now():0;
+    if(diff>PRE_MATCH_MINUTES*60000){
+      showCountdownError('Stream links will appear ~10 min before kickoff. Countdown above shows time remaining.');
+    }else{
+      showCountdownError('Stream not yet available for this match. Try again shortly.');
+    }
+    return;}
   $cdLoading.style.display='flex';$cdError.style.display='none';$cdRetry.style.display='none';
   try{
     var matchUrl=encodeURIComponent(nextMatch.url||nextMatch.matchPageUrl||'');
@@ -626,6 +677,25 @@ function injectDynamicChannels(servers,match){
 function injectSingleChannel(data,match){
   for(var i=CHANNELS.length-1;i>=0;i--){if(CHANNELS[i].category==='World Cup 2026')CHANNELS.splice(i,1);}
   CHANNELS.unshift({id:'wc-dynamic-1',name:'WC '+match.name,category:'World Cup 2026',logo:WC_LOGO,number:'01',isEmbed:!!data.isEmbed,url:data.streamUrl});
+  renderCatChips();renderChannels();
+}
+
+/* ═══ INJECT MATCH CHANNELS — adds all WC matches to sidebar ═══ */
+function injectMatchChannels(matches){
+  for(var i=CHANNELS.length-1;i>=0;i--){if(CHANNELS[i].category==='World Cup 2026')CHANNELS.splice(i,1);}
+  var wcNum=1;
+  matches.forEach(function(m,idx){
+    var isNext=nextMatch&&m.id===nextMatch.id;
+    var statusIcon=m.isLive?'\u{1F534} ':(m.isPost?'\u2705 ':'\u23F0 ');
+    CHANNELS.push({
+      id:m.id,name:statusIcon+m.name,
+      category:'World Cup 2026',logo:'',
+      number:String(wcNum++).padStart(2,'0'),
+      timeLabel:m.timeLabel||'',
+      isNextMatch:isNext,
+      isEmbed:false,url:'',_matchRef:m
+    });
+  });
   renderCatChips();renderChannels();
 }
 
