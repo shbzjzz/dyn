@@ -163,13 +163,24 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .mobile-nav-btn.active{color:var(--accent)}
 
 /* COUNTDOWN OVERLAY */
-#countdown-overlay{position:absolute;inset:0;z-index:15;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(4,11,20,0.92);backdrop-filter:blur(12px);border-radius:var(--radius-lg)}
+#countdown-overlay{position:absolute;inset:0;z-index:15;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(4,11,20,0.92);backdrop-filter:blur(12px);border-radius:var(--radius-lg)}
 #countdown-overlay.visible{display:flex}
 .player-frame:fullscreen #countdown-overlay,.player-frame:-webkit-full-screen #countdown-overlay,.player-frame:-moz-full-screen #countdown-overlay{border-radius:0}
-.cd-fifa-logo{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(167,139,250,0.4));animation:floatOrbs 8s ease-in-out infinite}
-.cd-match-name{font-size:16px;font-weight:700;letter-spacing:0.1em;font-family:var(--font-heading);color:var(--text-primary);text-align:center;max-width:90%}
-.cd-timer{font-size:48px;font-weight:700;letter-spacing:0.05em;font-family:var(--font-heading);color:var(--accent);text-shadow:0 0 30px var(--accent-glow)}
-.cd-label{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;font-family:var(--font-heading);color:var(--text-faint)}
+.cd-fifa-logo{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(167,139,250,0.4));animation:floatOrbs 8s ease-in-out infinite}
+.cd-match-name{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;font-family:var(--font-heading);color:var(--text-faint);text-align:center;max-width:90%}
+.cd-teams-row{display:flex;align-items:center;gap:14px;margin:4px 0}
+.cd-team{display:flex;align-items:center;gap:8px;min-width:80px}
+.cd-team-logo{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))}
+.cd-team-name{font-size:15px;font-weight:700;letter-spacing:0.04em;font-family:var(--font-heading);color:var(--text-primary);white-space:nowrap}
+.cd-vs{font-size:11px;font-weight:600;color:var(--text-faint);letter-spacing:0.1em;font-family:var(--font-heading)}
+.cd-score-row{display:flex;align-items:center;gap:10px;margin:2px 0}
+.cd-score-num{font-size:32px;font-weight:700;font-family:var(--font-heading);color:var(--accent);min-width:24px;text-align:center}
+.cd-score-sep{font-size:22px;color:var(--text-faint);font-weight:300}
+.cd-timer{font-size:44px;font-weight:700;letter-spacing:0.05em;font-family:var(--font-heading);color:var(--accent);text-shadow:0 0 30px var(--accent-glow);line-height:1}
+.cd-timer.cd-live-timer{color:var(--red);text-shadow:0 0 20px rgba(248,113,113,0.4)}
+.cd-label{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;font-family:var(--font-heading);color:var(--text-faint)}
+.cd-live-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:0.12em;font-family:var(--font-heading);color:var(--red);padding:3px 10px;border-radius:999px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);text-transform:uppercase}
+.cd-live-badge .live-dot{width:5px;height:5px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);animation:livePulse 1.4s ease-in-out infinite}
 .cd-status{font-size:10px;font-weight:600;letter-spacing:0.12em;font-family:var(--font-heading);color:var(--green);padding:4px 12px;border-radius:999px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2)}
 .cd-loading{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:0.1em;font-family:var(--font-heading);color:var(--text-secondary)}
 .cd-loading .overlay-spinner{width:16px;height:16px;border-width:2px}
@@ -242,9 +253,20 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
               <iframe id="tv-iframe" allowfullscreen allow="autoplay; encrypted-media"></iframe>
               <div id="countdown-overlay">
                 <img class="cd-fifa-logo" src="https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png" alt="FIFA WC 2026" onerror="this.style.display='none'">
-                <div class="cd-match-name" id="cd-match-name">Loading next match...</div>
+                <div class="cd-match-name" id="cd-match-name">FIFA World Cup 2026</div>
+                <div class="cd-teams-row" id="cd-teams-row" style="display:none">
+                  <div class="cd-team"><img class="cd-team-logo" id="cd-t1-logo" src="" onerror="this.style.display='none'" alt=""><span class="cd-team-name" id="cd-t1-name"></span></div>
+                  <div class="cd-vs" id="cd-vs">VS</div>
+                  <div class="cd-team"><img class="cd-team-logo" id="cd-t2-logo" src="" onerror="this.style.display='none'" alt=""><span class="cd-team-name" id="cd-t2-name"></span></div>
+                </div>
+                <div class="cd-score-row" id="cd-score-row" style="display:none">
+                  <span class="cd-score-num" id="cd-t1-score">0</span>
+                  <span class="cd-score-sep">-</span>
+                  <span class="cd-score-num" id="cd-t2-score">0</span>
+                </div>
                 <div class="cd-timer" id="cd-timer">--:--:--</div>
-                <div class="cd-label" id="cd-label">UNTIL KICKOFF</div>
+                <div class="cd-label" id="cd-label">LOADING MATCH SCHEDULE...</div>
+                <div class="cd-live-badge" id="cd-live-badge" style="display:none"><span class="live-dot"></span>LIVE</div>
                 <div class="cd-status" id="cd-status" style="display:none">STREAM AVAILABLE</div>
                 <div class="cd-loading" id="cd-loading" style="display:none"><div class="overlay-spinner"></div><span>Fetching stream...</span></div>
                 <div class="cd-error" id="cd-error" style="display:none"></div>
@@ -314,6 +336,7 @@ var WORKER_DEPLOYED=WORKER_URL.indexOf('your-sub')===-1;
 var PRE_MATCH_MINUTES=13;
 var WC_LOGO='https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png';
 var REFRESH_INTERVAL_MS=60000;
+function proxyImg(u){if(!u||!WORKER_DEPLOYED)return'';return WORKER_URL+'/img?url='+encodeURIComponent(u);}
 
 /* ═══ STATE ═══ */
 var activeId=null,selectedCat='All',searchQ='',sidebarOpen=false,currentView='tv';
@@ -337,7 +360,13 @@ var $scoreboardList=document.getElementById('scoreboard-list'),$standingsGrid=do
 var $tvView=document.getElementById('tv-view'),$standingsView=document.getElementById('standings-view');
 var $mobileNav=document.getElementById('mobile-nav');
 var $cdOverlay=document.getElementById('countdown-overlay'),$cdMatchName=document.getElementById('cd-match-name');
+var $cdTeamsRow=document.getElementById('cd-teams-row'),$cdT1Logo=document.getElementById('cd-t1-logo');
+var $cdT1Name=document.getElementById('cd-t1-name'),$cdVs=document.getElementById('cd-vs');
+var $cdT2Logo=document.getElementById('cd-t2-logo'),$cdT2Name=document.getElementById('cd-t2-name');
+var $cdScoreRow=document.getElementById('cd-score-row'),$cdT1Score=document.getElementById('cd-t1-score');
+var $cdT2Score=document.getElementById('cd-t2-score');
 var $cdTimer=document.getElementById('cd-timer'),$cdLabel=document.getElementById('cd-label');
+var $cdLiveBadge=document.getElementById('cd-live-badge');
 var $cdStatus=document.getElementById('cd-status'),$cdLoading=document.getElementById('cd-loading');
 var $cdError=document.getElementById('cd-error'),$cdRetry=document.getElementById('cd-retry');
 
@@ -380,17 +409,38 @@ $video.addEventListener('play',function(){$playBtn.innerHTML='<i class="fa-solid
 $video.addEventListener('pause',function(){$playBtn.innerHTML='<i class="fa-solid fa-play"></i>';});
 $refreshBtn.addEventListener('click',function(){if(activeId)playChannel(activeId,false);});
 
-/* ═══ SCOREBOARD & STANDINGS — via CF Worker (FortiClient blocks ESPN directly) ═══ */
+/* ═══ SCOREBOARD & STANDINGS — via CF Worker (bypasses FortiClient) ═══ */
 function fetchScoreboard(){
   if(!WORKER_DEPLOYED){$scoreboardList.innerHTML='<div class="no-data"><i class="fa-solid fa-satellite-dish"></i><p>Deploy worker.js first</p></div>';return;}
-  fetch(WORKER_URL+'/scoreboard').then(function(r){return r.json();}).then(function(d){liveEvents=d.events||[];renderScoreboard();}).catch(function(e){console.warn('Scoreboard error:',e);});
+  fetch(WORKER_URL+'/scoreboard').then(function(r){return r.json();}).then(function(d){liveEvents=d.events||[];renderScoreboard();syncLiveOverlay();}).catch(function(e){console.warn('Scoreboard error:',e);});
 }
 function fetchStandings(){
   if(!WORKER_DEPLOYED){$standingsGrid.innerHTML='<div class="no-data"><i class="fa-solid fa-satellite-dish"></i><p>Deploy worker.js first</p></div>';return;}
   fetch(WORKER_URL+'/standings').then(function(r){return r.json();}).then(function(d){standings=d.children||[];renderStandings();}).catch(function(e){console.warn('Standings error:',e);});
 }
-function renderScoreboard(){if(liveEvents.length===0){$scoreboardList.innerHTML='<div class="no-data"><i class="fa-solid fa-futbol"></i><p>No live data</p></div>';return;}$scoreboardList.innerHTML=liveEvents.map(function(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1],state=ev.status.type.state,statusCls=state==='in'?'live':state==='post'?'done':'sched';return '<div class="match-card-glass"><div class="match-header"><span class="match-comp">'+ev.name+'</span><span class="match-status '+statusCls+'">'+ev.status.type.shortDetail+'</span></div><div class="match-body"><div class="team-col"><img class="team-logo" src="'+(t1.team.logo||'')+'" alt="" onerror="this.remove()"><span class="team-name">'+t1.team.shortDisplayName+'</span></div><div class="score-box">'+t1.score+'\u2013'+t2.score+'</div><div class="team-col"><img class="team-logo" src="'+(t2.team.logo||'')+'" alt="" onerror="this.remove()"><span class="team-name">'+t2.team.shortDisplayName+'</span></div></div></div>';}).join('');}
-function renderStandings(){if(standings.length===0){$standingsGrid.innerHTML='<div class="no-data"><i class="fa-solid fa-circle-notch" style="animation:spin 1s linear infinite"></i><p>Loading standings...</p></div>';return;}$standingsGrid.innerHTML=standings.map(function(group){var teams=(group.standings&&group.standings.entries)||[];return '<div class="group-card-glass"><h3 class="group-title">'+group.name+'</h3><table class="group-table"><thead><tr><th colspan="2">Team</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>'+teams.map(function(t,ti){var getStat=function(n){var s=t.stats&&t.stats.find(function(s){return s.name===n;});return s?s.value:'\u2014';};var logo=(t.team.logos&&t.team.logos[0])?t.team.logos[0].href:'';return '<tr><td style="padding-right:4px;color:var(--text-secondary)">'+(ti+1)+'</td><td><div class="team-cell">'+(logo?'<img src="'+logo+'" onerror="this.remove()">':'')+'<span>'+t.team.displayName+'</span></div></td><td>'+getStat('wins')+'</td><td>'+getStat('ties')+'</td><td>'+getStat('losses')+'</td><td class="pts-cell">'+getStat('points')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');}
+function renderScoreboard(){
+  if(liveEvents.length===0){$scoreboardList.innerHTML='<div class="no-data"><i class="fa-solid fa-futbol"></i><p>No live data</p></div>';return;}
+  $scoreboardList.innerHTML=liveEvents.map(function(ev){
+    var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
+    var state=ev.status.type.state;
+    var statusCls=state==='in'?'live':state==='post'?'done':'sched';
+    var clock=ev.status.displayClock||'';
+    var logo1=proxyImg(t1.team.logo),logo2=proxyImg(t2.team.logo);
+    var clockHtml=clock?' <span style="color:var(--text-faint);font-size:9px;margin-left:4px">'+clock+'</span>':'';
+    return '<div class="match-card-glass"><div class="match-header"><span class="match-comp">'+ev.name+'</span><span class="match-status '+statusCls+'">'+ev.status.type.shortDetail+clockHtml+'</span></div><div class="match-body"><div class="team-col">'+(logo1?'<img class="team-logo" src="'+logo1+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span class="team-name">'+t1.team.shortDisplayName+'</span></div><div class="score-box">'+t1.score+'\u2013'+t2.score+'</div><div class="team-col">'+(logo2?'<img class="team-logo" src="'+logo2+'" alt="" onerror="this.style.display=\'none\'">':'')+'<span class="team-name">'+t2.team.shortDisplayName+'</span></div></div></div>';
+  }).join('');
+}
+function renderStandings(){
+  if(standings.length===0){$standingsGrid.innerHTML='<div class="no-data"><i class="fa-solid fa-circle-notch" style="animation:spin 1s linear infinite"></i><p>Loading standings...</p></div>';return;}
+  $standingsGrid.innerHTML=standings.map(function(group){
+    var teams=(group.standings&&group.standings.entries)||[];
+    return '<div class="group-card-glass"><h3 class="group-title">'+group.name+'</h3><table class="group-table"><thead><tr><th colspan="2">Team</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>'+teams.map(function(t,ti){
+      var getStat=function(n){var s=t.stats&&t.stats.find(function(s){return s.name===n;});return s?s.value:'\u2014';};
+      var logo=(t.team.logos&&t.team.logos[0])?proxyImg(t.team.logos[0].href):'';
+      return '<tr><td style="padding-right:4px;color:var(--text-secondary)">'+(ti+1)+'</td><td><div class="team-cell">'+(logo?'<img src="'+logo+'" onerror="this.remove()">':'')+'<span>'+t.team.displayName+'</span></div></td><td>'+getStat('wins')+'</td><td>'+getStat('ties')+'</td><td>'+getStat('losses')+'</td><td class="pts-cell">'+getStat('points')+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+  }).join('');
+}
 
 /* ═══ VIEW SWITCHING ═══ */
 function setView(view){currentView=view;document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.toggle('active',t.dataset.view===view);});document.querySelectorAll('.mobile-nav-btn[data-view]').forEach(function(t){t.classList.toggle('active',t.dataset.view===view);});if(view==='tv'){$tvView.style.display='';$standingsView.classList.remove('active');}else{$tvView.style.display='none';$standingsView.classList.add('active');}}
@@ -414,54 +464,131 @@ $cdRetry.addEventListener('click',function(){$cdError.style.display='none';$cdRe
    ════════════════════════════════════════════════════════════════ */
 
 function showCountdownError(msg){$cdLoading.style.display='none';$cdError.textContent=msg;$cdError.style.display='block';$cdRetry.style.display='block';}
+function cdHideExtras(){$cdTeamsRow.style.display='none';$cdScoreRow.style.display='none';$cdVs.style.display='none';$cdLiveBadge.style.display='none';$cdTimer.classList.remove('cd-live-timer');}
 
+/* ═══ SYNC LIVE OVERLAY — updates scores/clock from scoreboard refresh ═══ */
+function syncLiveOverlay(){
+  if(!nextMatch||!nextMatch._espn||!nextMatch.isLive)return;
+  var ev=nextMatch._espn;if(!ev)return;
+  var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
+  $cdT1Score.textContent=t1.score||'0';$cdT2Score.textContent=t2.score||'0';
+  var clock=ev.status.displayClock||'';
+  var detail=ev.status.type.shortDetail||'';
+  $cdTimer.textContent=clock||detail||'LIVE';
+  $cdLabel.textContent=detail==='HT'?'HALF TIME':detail==='FT'?'FULL TIME':'IN PROGRESS';
+}
+
+/* ═══ FETCH WC MATCHES — hellosports first, ESPN fallback ═══ */
 async function fetchWCMatches(){
-  if(!WORKER_DEPLOYED){
-    showCountdownError('Deploy worker.js to Cloudflare Workers and set WORKER_URL.');
-    return;
-  }
+  if(!WORKER_DEPLOYED){showCountdownError('Deploy worker.js to Cloudflare Workers and set WORKER_URL.');return;}
+  /* Strategy 1: hellosports.io via worker */
   try{
     var res=await fetch(WORKER_URL+'/matches');
-    if(!res.ok)throw new Error('Worker returned '+res.status);
-    var data=await res.json();
-    if(data.error)throw new Error(data.error);
-    if(!data.matches||data.matches.length===0){console.warn('[WC] No matches found');showCountdownError('No upcoming FIFA WC 2026 matches found on hellosports.io.');return;}
-    wcMatches=data.matches;
-    console.log('[WC] Fetched '+wcMatches.length+' matches');
+    if(res.ok){var data=await res.json();if(!data.error&&data.matches&&data.matches.length>0){wcMatches=data.matches;console.log('[WC] Hellosports: '+wcMatches.length+' matches');processWCMatches();return;}}
+  }catch(e){console.warn('[WC] /matches failed, trying /scoreboard:',e);}
+  /* Strategy 2: ESPN scoreboard via worker */
+  try{
+    var sbRes=await fetch(WORKER_URL+'/scoreboard');
+    if(!sbRes.ok)throw new Error('Scoreboard '+sbRes.status);
+    var sbData=await sbRes.json();var events=sbData.events||[];
+    if(events.length===0){showCountdownError('No FIFA WC 2026 matches found today.');return;}
+    wcMatches=events.map(function(ev,i){
+      var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
+      var kickoffTime=ev.date?new Date(ev.date).getTime():null;
+      var state=ev.status.type.state;
+      return{id:'espn-'+i,name:t1.team.shortDisplayName+' vs '+t2.team.shortDisplayName,
+        team1:t1.team.shortDisplayName,team2:t2.team.shortDisplayName,
+        t1Logo:t1.team.logo||'',t2Logo:t2.team.logo||'',
+        url:'',kickoffTime:kickoffTime,timeString:ev.date||'',
+        isLive:state==='in',isPost:state==='post',_espn:ev};
+    });
+    console.log('[WC] ESPN fallback: '+wcMatches.length+' matches');
     processWCMatches();
-  }catch(err){
-    console.error('[WC] Failed to fetch matches:',err);
-    showCountdownError('Worker unreachable: '+err.message);
-  }
+  }catch(err){console.error('[WC] All sources failed:',err);showCountdownError('Cannot reach match servers.');}
 }
 
+/* ═══ PROCESS MATCHES — pick live > upcoming > finished ═══ */
 function processWCMatches(){
   var now=Date.now();
+  /* Live matches first */
+  var live=wcMatches.filter(function(m){return m.isLive;});
+  if(live.length>0){nextMatch=live[0];showLiveMatch(nextMatch);return;}
+  /* Upcoming */
   var upcoming=wcMatches.filter(function(m){return m.kickoffTime&&m.kickoffTime>now;}).sort(function(a,b){return a.kickoffTime-b.kickoffTime;});
-  if(upcoming.length===0){
-    var live=wcMatches.filter(function(m){return m.isLive;});
-    if(live.length>0){nextMatch=live[0];$cdMatchName.textContent=nextMatch.name+' (LIVE)';$cdTimer.textContent='LIVE NOW';$cdLabel.textContent='FETCHING STREAM...';$cdOverlay.classList.add('visible');wcStreamFetched=false;fetchWCStream();}
-    else{showCountdownError('No upcoming FIFA WC 2026 matches found.');}
-    return;
-  }
-  var prevId=nextMatch?nextMatch.id:null;
-  nextMatch=upcoming[0];
-  if(nextMatch.id!==prevId)wcStreamFetched=false;
-  $cdMatchName.textContent=nextMatch.name;
-  $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';$cdStatus.style.display='none';
-  $cdOverlay.classList.add('visible');hideOverlay();
-  startCountdown();
-  checkPreMatch();
+  if(upcoming.length>0){nextMatch=upcoming[0];showUpcomingMatch(nextMatch);return;}
+  /* Finished — show last one */
+  var post=wcMatches.filter(function(m){return m.isPost;});
+  if(post.length>0){nextMatch=post[post.length-1];showFinishedMatch(nextMatch);return;}
+  showCountdownError('No FIFA WC 2026 matches found.');
 }
 
+/* ═══ SHOW UPCOMING MATCH ═══ */
+function showUpcomingMatch(m){
+  var prevId=nextMatch?nextMatch.id:null;nextMatch=m;
+  if(m.id!==prevId)wcStreamFetched=false;
+  $cdMatchName.textContent=m.name;cdHideExtras();
+  if(m.t1Logo||m.t2Logo){
+    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
+    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
+    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
+    $cdVs.style.display='';$cdTeamsRow.style.display='flex';
+  }
+  $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';$cdStatus.style.display='none';
+  $cdOverlay.classList.add('visible');hideOverlay();
+  startCountdown();checkPreMatch();
+}
+
+/* ═══ SHOW LIVE MATCH ═══ */
+function showLiveMatch(m){
+  var prevId=nextMatch?nextMatch.id:null;nextMatch=m;
+  if(m.id!==prevId)wcStreamFetched=false;
+  $cdMatchName.textContent=m.name;cdHideExtras();
+  if(m.t1Logo||m.t2Logo){
+    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
+    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
+    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
+    $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
+  }
+  /* Show live score */
+  var ev=m._espn;if(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
+    $cdT1Score.textContent=t1.score||'0';$cdT2Score.textContent=t2.score||'0';$cdScoreRow.style.display='flex';
+    var clock=ev.status.displayClock||'';var detail=ev.status.type.shortDetail||'';
+    $cdTimer.textContent=clock||'LIVE';$cdTimer.classList.add('cd-live-timer');
+    $cdLabel.textContent=detail==='HT'?'HALF TIME':'IN PROGRESS';
+  }else{$cdTimer.textContent='LIVE NOW';$cdTimer.classList.add('cd-live-timer');$cdLabel.textContent='IN PROGRESS';}
+  $cdLiveBadge.style.display='inline-flex';$cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';
+  $cdOverlay.classList.add('visible');hideOverlay();
+  wcStreamFetched=false;fetchWCStream();
+}
+
+/* ═══ SHOW FINISHED MATCH ═══ */
+function showFinishedMatch(m){
+  nextMatch=m;cdHideExtras();
+  $cdMatchName.textContent=m.name;
+  if(m.t1Logo||m.t2Logo){
+    $cdT1Logo.src=proxyImg(m.t1Logo);$cdT1Logo.style.display='';
+    $cdT2Logo.src=proxyImg(m.t2Logo);$cdT2Logo.style.display='';
+    $cdT1Name.textContent=m.team1||'';$cdT2Name.textContent=m.team2||'';
+    $cdVs.style.display='none';$cdTeamsRow.style.display='flex';
+  }
+  var ev=m._espn;if(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1];
+    $cdT1Score.textContent=t1.score||'0';$cdT2Score.textContent=t2.score||'0';$cdScoreRow.style.display='flex';
+  }
+  $cdTimer.textContent='FT';$cdTimer.classList.remove('cd-live-timer');$cdLabel.textContent='FULL TIME';
+  $cdError.style.display='none';$cdRetry.style.display='none';$cdLoading.style.display='none';$cdStatus.style.display='none';
+  $cdOverlay.classList.add('visible');hideOverlay();
+}
+
+/* ═══ COUNTDOWN TIMER ═══ */
 function startCountdown(){
   if(countdownInterval)clearInterval(countdownInterval);
   function tick(){
     if(!nextMatch||!nextMatch.kickoffTime)return;
     var now=Date.now(),diff=nextMatch.kickoffTime-now;
-    if(diff<=0){$cdTimer.textContent='LIVE';$cdLabel.textContent='MATCH IN PROGRESS';clearInterval(countdownInterval);setTimeout(function(){fetchWCMatches();},5000);return;}
+    if(diff<=0){$cdTimer.textContent='LIVE';$cdLabel.textContent='MATCH STARTED';clearInterval(countdownInterval);setTimeout(function(){fetchWCMatches();},5000);return;}
     var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
     $cdTimer.textContent=(h>0?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    $cdTimer.classList.remove('cd-live-timer');
     if(diff<=PRE_MATCH_MINUTES*60000){$cdLabel.textContent='STREAM AVAILABLE SOON';$cdStatus.style.display='block';checkPreMatch();}
     else{$cdLabel.textContent='UNTIL KICKOFF';$cdStatus.style.display='none';}
   }
@@ -478,21 +605,12 @@ async function fetchWCStream(){
     var matchUrl=encodeURIComponent(nextMatch.url||nextMatch.matchPageUrl||'');
     var res=await fetch(WORKER_URL+'/stream?url='+matchUrl);
     if(!res.ok)throw new Error('Worker returned '+res.status);
-    var data=await res.json();
-    if(data.error)throw new Error(data.error);
+    var data=await res.json();if(data.error)throw new Error(data.error);
     wcStreamFetched=true;$cdLoading.style.display='none';
-    if(data.servers&&data.servers.length>0){
-      injectDynamicChannels(data.servers,nextMatch);
-      var best=data.best||data.servers[0];
-      if(best&&best.id)setTimeout(function(){playChannel(best.id);},500);
-    }else if(data.streamUrl){
-      injectSingleChannel(data,nextMatch);
-      setTimeout(function(){playChannel('wc-dynamic-1');},500);
-    }else{showCountdownError('No stream servers found for this match.');}
-  }catch(err){
-    console.error('[WC] Failed to fetch stream:',err);
-    $cdLoading.style.display='none';showCountdownError('Stream fetch failed: '+err.message);
-  }
+    if(data.servers&&data.servers.length>0){injectDynamicChannels(data.servers,nextMatch);var best=data.best||data.servers[0];if(best&&best.id)setTimeout(function(){playChannel(best.id);},500);}
+    else if(data.streamUrl){injectSingleChannel(data,nextMatch);setTimeout(function(){playChannel('wc-dynamic-1');},500);}
+    else{showCountdownError('No stream servers found for this match.');}
+  }catch(err){console.error('[WC] Stream failed:',err);$cdLoading.style.display='none';showCountdownError('Stream fetch failed: '+err.message);}
 }
 
 function injectDynamicChannels(servers,match){
@@ -513,9 +631,10 @@ function injectSingleChannel(data,match){
 
 /* ═══ INIT ═══ */
 checkMobile();renderCatChips();renderChannels();setView('tv');
-fetchScoreboard();fetchStandings();setInterval(fetchScoreboard,30000);
-$cdOverlay.classList.add('visible');$cdMatchName.textContent='FIFA World Cup 2026';$cdTimer.textContent='--:--:--';$cdLabel.textContent='LOADING MATCH SCHEDULE...';
+fetchScoreboard();fetchStandings();
+$cdOverlay.classList.add('visible');
 fetchWCMatches();
+setInterval(function(){fetchScoreboard();},30000);
 autoRefreshTimer=setInterval(function(){fetchWCMatches();},REFRESH_INTERVAL_MS);
 </script>
 </body>
