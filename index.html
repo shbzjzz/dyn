@@ -297,21 +297,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <script>
 try{shaka.polyfill.installAll();}catch(e){}
 
-/* ═══ CHANNELS — NO STATIC WC 2026 ═══ */
-var CHANNELS=[
-  {id:'trt-default',name:'TRT 1',category:'News',logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/TRT_1_logo.svg/240px-TRT_1_logo.svg.png',number:'01',isEmbed:true,url:'https://tr.canlitvme.com/livetv/trt1-canli-kesintisiz-izle/1'},
-  {id:'prime-sports',name:'Prime Sports Live',category:'Sports',logo:'https://imglink.cc/cdn/kIiut6WBq0.jpg',number:'04',url:'https://ch.eznzer.online/new1_720/index.m3u8'},
-  {id:'12305',name:'Caze TV Brasil',category:'Sports',logo:'https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png',number:'01',url:'https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8'},
-  {id:'12317',name:'FIFA Plus',category:'Sports',logo:'https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png',number:'02',url:'https://37b4c228.wurl.com/manifest/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWZyX0ZJRkFQbHVzRnJlbmNoX0hMUw/6f5437c5-e015-4754-8476-c8c6d27d3a55/1.m3u8'},
-  {id:'12307',name:'Bein Sports XTRA',category:'Sports',logo:'https://imglink.cc/cdn/kIiut6WBq0.jpg',number:'03',url:'https://amg01334-amg01334c2-freelivesports-emea-6791.playouts.now.amagi.tv/playlist/amg01334-beinxtra-beinxtrausapp-freelivesportsemea/playlist.m3u8'},
-  {id:'12318',name:'FIFA+ Argentina',category:'Sports',logo:'https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png',number:'05',url:'https://6c849fb3.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctbXhfRklGQVBsdXNTcGFuaXNoLTFfSExT/playlist.m3u8'},
-  {id:'12308',name:'FIFA+ English',category:'Sports',logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/FIFA_Plus_logo.svg/240px-FIFA_Plus_logo.svg.png',number:'06',url:'https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8'},
-  {id:'12452',name:'BBC Earth',category:'Documentary',logo:'https://imglink.cc/cdn/eEZmseF3Tb.jpg',number:'07',url:'https://amg00793-amg00793c6-xumo-us-2669.playouts.now.amagi.tv/BBCStudios-BBCEarthA-hls/playlist540p.m3u8'},
-  {id:'test1',name:'Test Feed (Mux)',category:'Test',logo:'',number:'08',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'},
-  {id:'cbs-sport',name:'CBS Sport',category:'Sports',logo:'https://imglink.cc/cdn/kIiut6WBq0.jpg',number:'09',isDash:true,url:'https://dash2.antik.sk/stream/nvidia_ct_sport/playlist_cenc.mpd',drmKeys:{'11223344556677889900112233445566':'4b80724d0ef86bcb2c21f7999d67739d'}},
-  {id:'tudn-m6',name:'TUDN',category:'Sports',logo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/TUDN_logo.svg/240px-TUDN_logo.svg.png',number:'10',isDash:true,url:'https://origin-m6web.live.6cloud.fr/out/v1/6play/6play-m6/cmaf_cenc00/dash-short-hd.mpd',drmKeys:{'433ffba670963e70857859a9dff4be04':'51ede3a821229fe81e71282c8eff80e3'}},
-  {id:'sports18-nitro',name:'Sports18 Nitro',category:'Sports',logo:'',number:'11',isDash:true,url:'https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/x0srg3jjpz/out/v1/f779c49314394d61886d63f58d9d52e4/cenc.mpd',drmKeys:{'4f4c3a9912ea752e88f4497864a1bc8b':'278128004fe8c6ffb2cd2a0c154a241a'}}
-];
+/* ═══ CHANNELS — fully dynamic, populated by CF Worker ═══ */
+var CHANNELS=[];
 
 /* ═══ DYNAMIC WC CONFIG ═══ */
 /*
@@ -327,8 +314,6 @@ var WORKER_DEPLOYED=WORKER_URL.indexOf('your-sub')===-1;
 var PRE_MATCH_MINUTES=13;
 var WC_LOGO='https://i.ibb.co.com/vnbkF0r/fifa-world-cup-2026-logo-png-seeklogo-665644.png';
 var REFRESH_INTERVAL_MS=60000;
-var ESPN_API='https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world';
-var CORS_PROXY='https://corsproxy.io/?url=';
 
 /* ═══ STATE ═══ */
 var activeId=null,selectedCat='All',searchQ='',sidebarOpen=false,currentView='tv';
@@ -395,9 +380,15 @@ $video.addEventListener('play',function(){$playBtn.innerHTML='<i class="fa-solid
 $video.addEventListener('pause',function(){$playBtn.innerHTML='<i class="fa-solid fa-play"></i>';});
 $refreshBtn.addEventListener('click',function(){if(activeId)playChannel(activeId,false);});
 
-/* ═══ ESPN DATA (via CORS proxy to bypass SSL cert issues) ═══ */
-function fetchScoreboard(){fetch(CORS_PROXY+encodeURIComponent(ESPN_API+'/scoreboard')).then(function(r){return r.json();}).then(function(d){liveEvents=d.events||[];renderScoreboard();}).catch(function(e){console.warn('ESPN scoreboard error:',e);});}
-function fetchStandings(){fetch(CORS_PROXY+encodeURIComponent(ESPN_API+'/standings')).then(function(r){return r.json();}).then(function(d){standings=d.children||[];renderStandings();}).catch(function(e){console.warn('ESPN standings error:',e);});}
+/* ═══ SCOREBOARD & STANDINGS — via CF Worker (FortiClient blocks ESPN directly) ═══ */
+function fetchScoreboard(){
+  if(!WORKER_DEPLOYED){$scoreboardList.innerHTML='<div class="no-data"><i class="fa-solid fa-satellite-dish"></i><p>Deploy worker.js first</p></div>';return;}
+  fetch(WORKER_URL+'/scoreboard').then(function(r){return r.json();}).then(function(d){liveEvents=d.events||[];renderScoreboard();}).catch(function(e){console.warn('Scoreboard error:',e);});
+}
+function fetchStandings(){
+  if(!WORKER_DEPLOYED){$standingsGrid.innerHTML='<div class="no-data"><i class="fa-solid fa-satellite-dish"></i><p>Deploy worker.js first</p></div>';return;}
+  fetch(WORKER_URL+'/standings').then(function(r){return r.json();}).then(function(d){standings=d.children||[];renderStandings();}).catch(function(e){console.warn('Standings error:',e);});
+}
 function renderScoreboard(){if(liveEvents.length===0){$scoreboardList.innerHTML='<div class="no-data"><i class="fa-solid fa-futbol"></i><p>No live data</p></div>';return;}$scoreboardList.innerHTML=liveEvents.map(function(ev){var c=ev.competitions[0],t1=c.competitors[0],t2=c.competitors[1],state=ev.status.type.state,statusCls=state==='in'?'live':state==='post'?'done':'sched';return '<div class="match-card-glass"><div class="match-header"><span class="match-comp">'+ev.name+'</span><span class="match-status '+statusCls+'">'+ev.status.type.shortDetail+'</span></div><div class="match-body"><div class="team-col"><img class="team-logo" src="'+(t1.team.logo||'')+'" alt="" onerror="this.remove()"><span class="team-name">'+t1.team.shortDisplayName+'</span></div><div class="score-box">'+t1.score+'\u2013'+t2.score+'</div><div class="team-col"><img class="team-logo" src="'+(t2.team.logo||'')+'" alt="" onerror="this.remove()"><span class="team-name">'+t2.team.shortDisplayName+'</span></div></div></div>';}).join('');}
 function renderStandings(){if(standings.length===0){$standingsGrid.innerHTML='<div class="no-data"><i class="fa-solid fa-circle-notch" style="animation:spin 1s linear infinite"></i><p>Loading standings...</p></div>';return;}$standingsGrid.innerHTML=standings.map(function(group){var teams=(group.standings&&group.standings.entries)||[];return '<div class="group-card-glass"><h3 class="group-title">'+group.name+'</h3><table class="group-table"><thead><tr><th colspan="2">Team</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>'+teams.map(function(t,ti){var getStat=function(n){var s=t.stats&&t.stats.find(function(s){return s.name===n;});return s?s.value:'\u2014';};var logo=(t.team.logos&&t.team.logos[0])?t.team.logos[0].href:'';return '<tr><td style="padding-right:4px;color:var(--text-secondary)">'+(ti+1)+'</td><td><div class="team-cell">'+(logo?'<img src="'+logo+'" onerror="this.remove()">':'')+'<span>'+t.team.displayName+'</span></div></td><td>'+getStat('wins')+'</td><td>'+getStat('ties')+'</td><td>'+getStat('losses')+'</td><td class="pts-cell">'+getStat('points')+'</td></tr>';}).join('')+'</tbody></table></div>';}).join('');}
 
@@ -425,52 +416,22 @@ $cdRetry.addEventListener('click',function(){$cdError.style.display='none';$cdRe
 function showCountdownError(msg){$cdLoading.style.display='none';$cdError.textContent=msg;$cdError.style.display='block';$cdRetry.style.display='block';}
 
 async function fetchWCMatches(){
-  /* Strategy 1: Use deployed CF Worker (scrapes hellosports.io for streams) */
-  if(WORKER_DEPLOYED){
-    try{
-      var res=await fetch(WORKER_URL+'/matches');
-      if(res.ok){
-        var data=await res.json();
-        if(!data.error&&data.matches&&data.matches.length>0){
-          wcMatches=data.matches;
-          console.log('[WC] Worker: '+wcMatches.length+' matches');
-          processWCMatches();
-          return;
-        }
-      }
-    }catch(e){console.warn('[WC] Worker failed, trying ESPN fallback:',e);}
+  if(!WORKER_DEPLOYED){
+    showCountdownError('Deploy worker.js to Cloudflare Workers and set WORKER_URL.');
+    return;
   }
-
-  /* Strategy 2: ESPN API fallback (match data + countdown, no stream URLs) */
   try{
-    var espnRes=await fetch(CORS_PROXY+encodeURIComponent(ESPN_API+'/scoreboard'));
-    if(!espnRes.ok)throw new Error('ESPN returned '+espnRes.status);
-    var espnData=await espnRes.json();
-    var events=espnData.events||[];
-    if(events.length===0){console.warn('[WC] No matches from ESPN');showCountdownError('No upcoming FIFA WC 2026 matches found.');return;}
-    wcMatches=events.map(function(ev,i){
-      var c=ev.competitions[0];
-      var t1=c.competitors[0],t2=c.competitors[1];
-      var dateStr=ev.date;
-      var kickoffTime=dateStr?new Date(dateStr).getTime():null;
-      var state=ev.status.type.state;
-      return{
-        id:'espn-wc-'+i,
-        name:t1.team.shortDisplayName+' vs '+t2.team.shortDisplayName,
-        team1:t1.team.shortDisplayName,
-        team2:t2.team.shortDisplayName,
-        url:'',
-        kickoffTime:kickoffTime,
-        timeString:dateStr||'',
-        isLive:state==='in',
-        _espnEvent:ev
-      };
-    });
-    console.log('[WC] ESPN fallback: '+wcMatches.length+' matches');
+    var res=await fetch(WORKER_URL+'/matches');
+    if(!res.ok)throw new Error('Worker returned '+res.status);
+    var data=await res.json();
+    if(data.error)throw new Error(data.error);
+    if(!data.matches||data.matches.length===0){console.warn('[WC] No matches found');showCountdownError('No upcoming FIFA WC 2026 matches found on hellosports.io.');return;}
+    wcMatches=data.matches;
+    console.log('[WC] Fetched '+wcMatches.length+' matches');
     processWCMatches();
   }catch(err){
-    console.error('[WC] ESPN fallback also failed:',err);
-    showCountdownError('Cannot reach match data servers. Check your connection.');
+    console.error('[WC] Failed to fetch matches:',err);
+    showCountdownError('Worker unreachable: '+err.message);
   }
 }
 
@@ -511,17 +472,7 @@ function checkPreMatch(){if(!nextMatch||wcStreamFetched)return;var diff=nextMatc
 
 async function fetchWCStream(){
   if(wcStreamFetched||!nextMatch)return;
-  /* If match came from ESPN fallback (no hellosports URL), stream requires Worker */
-  if(!nextMatch.url){
-    if(!WORKER_DEPLOYED){
-      $cdLoading.style.display='none';
-      showCountdownError('Auto-stream requires Cloudflare Worker. Deploy worker.js and update WORKER_URL.');
-    }else{
-      $cdLoading.style.display='none';
-      showCountdownError('No stream link available for this match from Worker.');
-    }
-    return;
-  }
+  if(!nextMatch.url){$cdLoading.style.display='none';showCountdownError('No stream link for this match.');return;}
   $cdLoading.style.display='flex';$cdError.style.display='none';$cdRetry.style.display='none';
   try{
     var matchUrl=encodeURIComponent(nextMatch.url||nextMatch.matchPageUrl||'');
