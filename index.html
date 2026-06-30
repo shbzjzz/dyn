@@ -708,6 +708,7 @@ const COUNTRY_MAP = {
   MAR:'MA',NED:'NL',NGA:'NG',PAN:'PA',PER:'PE',POL:'PL',POR:'PT',
   QAT:'QA',SAU:'SA',SEN:'SN',SRB:'RS',SUI:'CH',TUN:'TN',URU:'UY',
   USA:'US',WAL:'GB',NOR:'NO',SWE:'SE',CIV:'CI',TUR:'TR',
+  PRY:'PY',COD:'CD',DEN:'DK',
 };
 
 const NAME_MAP = {
@@ -722,7 +723,10 @@ const NAME_MAP = {
   'serbia':'SRB','switzerland':'SUI','swiss':'SUI','tunisia':'TUN',
   'uruguay':'URY','usa':'USA','united states':'USA','wales':'WAL',
   'norway':'NOR','sweden':'SWE','ivory coast':'CIV',"c\u00f4te d\u2019ivoire":'CIV',
-  'cote divoire':'CIV','turkey':'TUR',
+  'cote divoire':'CIV','turkey':'TUR','paraguay':'PRY','dr congo':'COD',
+  'netherlands':'NED','morocco':'MAR','ecuador':'ECU','denmark':'DEN',
+  'germany':'GER','japan':'JPN','brazil':'BRA','netherlands':'NED',
+  'congo':'COD','england':'ENG','belgium':'BEL','senegal':'SEN',
 };
 
 function codeToFlag(code3) {
@@ -1014,35 +1018,198 @@ function loadDashStream(url, ch) {
 }
 
 /* ══════════════════════════════════════════
-   MATCH DATA FETCHING (dual-source)
+   CLIENT-SIDE SCRAPING (bypasses Worker fetch limits)
+   Cloudflare Workers can't fetch Blogger domains (530 DNS error).
+   So we scrape directly from the browser via CORS proxy.
    ══════════════════════════════════════════ */
-async function fetchWCMatches() {
-  try {
-    const res = await fetch(`${WORKER}/matches`);
-    if (!res.ok) throw new Error(`Worker ${res.status}`);
-    const data = await res.json();
-    wcMatches = data.matches || [];
-    matchSource = data.source || 'none';
+const CORS_PROXIES = [
+  // Try direct first (some Blogger sites allow CORS)
+  url => url,
+  // allorigins /get returns JSON: { contents: "..." }
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  // corsproxy.io
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  // codetabs proxy
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
 
-    if (data.scrapeError) {
-      console.warn('[WC] Scrape error:', data.scrapeError);
-    }
-    console.log(`[WC] Got ${wcMatches.length} matches from ${matchSource}`);
+const SCRAPE_URLS = [
+  { url: 'https://www.epicsports.in/', parser: 'epicsports', label: 'epicsports' },
+  { url: 'https://www.hellosports.online/', parser: 'hellosports', label: 'hellosports' },
+];
 
-    if (wcMatches.length > 0) {
-      injectMatchChannels(wcMatches);
-      const live = wcMatches.filter(m => getMatchStatus(m) === 'live');
-      const next = wcMatches.filter(m => getMatchStatus(m) === 'upcoming').sort((a,b) => new Date(a.start) - new Date(b.start));
-      if (live.length > 0) processWCMatches([live[0]]);
-      else if (next.length > 0) processWCMatches([next[0]]);
-    } else {
-      console.log('[WC] No matches from scraper, trying ESPN fallback...');
-      tryESPNFallback();
+async function fetchViaCORS(targetUrl) {
+  for (const proxyFn of CORS_PROXIES) {
+    try {
+      const proxyUrl = proxyFn(targetUrl);
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(tid);
+      if (!res.ok) continue;
+
+      // allorigins /get returns JSON with .contents
+      if (proxyUrl.includes('allorigins.win/get')) {
+        const json = await res.json();
+        const text = json.contents;
+        if (text && text.length > 500) return text;
+      } else {
+        const text = await res.text();
+        if (text.length > 500) return text;
+      }
+    } catch(e) {
+      console.warn(`[CORS] Proxy failed:`, e.message);
     }
-  } catch(e) {
-    console.error('[WC] Failed to fetch matches:', e.message);
-    tryESPNFallback();
   }
+  return null;
+}
+
+/* ── EPICSPORTS PARSER (match-event divs) ── */
+function parseEpicSportsHTML(html) {
+  const clean = html
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+
+  const matches = [];
+  const seen = new Set();
+
+  const openerRe = /<div[^>]*class="[^"]*match-event[^"]*"[^>]*data-result="([^"]*)"/gi;
+  let om;
+
+  while ((om = openerRe.exec(clean)) !== null) {
+    const resultAttr = om[1];
+    const start = om.index;
+
+    let depth = 0;
+    let i = start;
+    let end = -1;
+
+    while (i < clean.length) {
+      if (clean.startsWith('<div', i)) {
+        depth++;
+      } else if (clean.startsWith('</div>', i)) {
+        depth--;
+        if (depth === 0) {
+          end = i + 6;
+          break;
+        }
+      }
+      i++;
+    }
+
+    if (end < 0) continue;
+
+    const block = clean.substring(start, end);
+
+    const t1 = block.match(/first-team[\s\S]*?team-name[^>]*>\s*([^<]+)/);
+    const t2 = block.match(/left-team[\s\S]*?team-name[^>]*>\s*([^<]+)/);
+    const timeM = block.match(/match-hour[^>]*>\s*([^<]+)/);
+    const linkM = block.match(/href="([^"]+)"/);
+    const startM = block.match(/data-start="([^"]+)"/);
+    const endM = block.match(/data-gameends="([^"]+)"/);
+    const roundM = block.match(/match-info[\s\S]*?<li><span>([^<]+)<\/span><\/li>/);
+
+    const team1 = t1 ? t1[1].trim() : '';
+    const team2 = t2 ? t2[1].trim() : '';
+
+    const key = `${team1}-${team2}`;
+
+    if (!team1 || !team2 || seen.has(key)) continue;
+
+    seen.add(key);
+
+    matches.push({
+      team1,
+      team2,
+      time: timeM ? timeM[1].trim() : '',
+      result: resultAttr || 'vs',
+      link: linkM ? linkM[1] : '',
+      start: startM ? startM[1] : '',
+      end: endM ? endM[1] : '',
+      round: roundM ? roundM[1].trim() : '',
+      source: 'epicsports'
+    });
+  }
+
+  return matches;
+}
+/* ── HELLOSPORTS PARSER (msw-card data-attributes) ── */
+function parseHelloSportsHTML(html) {
+  const matches = [];
+  const seen = new Set();
+  const cardRe = /<div[^>]*class="[^"]*msw-card[^"]*"[^>]*>/gi;
+  let cm;
+  while ((cm = cardRe.exec(html)) !== null) {
+    const tag = cm[0];
+    const get = (attr) => { const m = tag.match(new RegExp(`data-${attr}="([^"]*)"`)); return m ? m[1] : ''; };
+    const homeName = get('home-name') || get('home');
+    const awayName = get('away-name') || get('away');
+    const start = get('start');
+    const status = get('status');
+    const compName = get('comp-name');
+    const detail = get('detail');
+    const url = get('url');
+    const homeScore = get('home-score');
+    const awayScore = get('away-score');
+    if (!homeName || !awayName) continue;
+    const key = `${homeName}-${awayName}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    // Determine result string for matches that have scores
+    let result = 'vs';
+    if (homeScore && awayScore && status === 'finished') {
+      result = `${homeScore}-${awayScore}`;
+    }
+    // Only include FIFA World Cup matches (or all if no comp filter)
+    const isWC = compName.toLowerCase().includes('fifa') || compName.toLowerCase().includes('world cup');
+    const matchObj = {
+      team1: homeName,
+      team2: awayName,
+      time: '',
+      result,
+      link: url,
+      start,
+      end: '',
+      round: detail ? `${detail} of 32` : (compName || ''),
+      source: 'hellosports',
+      status: status === 'live' ? 'live' : status === 'finished' ? 'finished' : 'upcoming'
+    };
+    // Include all matches (both WC and non-WC for sidebar)
+    matches.push(matchObj);
+  }
+  return matches;
+}
+
+/* ── MAIN FETCH: tries epicsports → hellosports → ESPN fallback ── */
+async function fetchWCMatches() {
+  for (const source of SCRAPE_URLS) {
+    try {
+      console.log(`[WC] Fetching ${source.label} via CORS proxy...`);
+      const html = await fetchViaCORS(source.url);
+      if (!html) { console.warn(`[WC] ${source.label}: empty response`); continue; }
+
+      let matches = [];
+      if (source.parser === 'epicsports') matches = parseEpicSportsHTML(html);
+      else if (source.parser === 'hellosports') matches = parseHelloSportsHTML(html);
+
+      if (matches.length > 0) {
+        matchSource = source.label;
+        wcMatches = matches;
+        console.log(`[WC] Got ${matches.length} matches from ${source.label}`);
+        injectMatchChannels(matches);
+        const live = matches.filter(m => (m.status || getMatchStatus(m)) === 'live');
+        const upcoming = matches.filter(m => (m.status || getMatchStatus(m)) === 'upcoming').sort((a,b) => new Date(a.start) - new Date(b.start));
+        if (live.length > 0) processWCMatches([live[0]]);
+        else if (upcoming.length > 0) processWCMatches([upcoming[0]]);
+        return; // success, stop trying
+      }
+    } catch(e) {
+      console.error(`[WC] ${source.label} error:`, e.message);
+    }
+  }
+  // All scrapers failed → ESPN fallback via worker
+  console.log('[WC] All scrapers failed, trying ESPN fallback...');
+  tryESPNFallback();
 }
 
 async function tryESPNFallback() {
@@ -1054,7 +1221,6 @@ async function tryESPNFallback() {
     const events = (data.events || []).filter(e =>
       (e.competitions[0]?.competitors || []).length >= 2
     );
-
     const espnMatches = events.map(ev => {
       const c = ev.competitions[0];
       const t1 = c.competitors[0];
@@ -1063,21 +1229,15 @@ async function tryESPNFallback() {
       return {
         team1: t1.team.shortDisplayName || t1.team.displayName,
         team2: t2.team.shortDisplayName || t2.team.displayName,
-        score1: t1.score,
-        score2: t2.score,
+        score1: t1.score, score2: t2.score,
         status: state === 'in' ? 'live' : state === 'post' ? 'finished' : 'upcoming',
         timeLabel: ev.status.type.shortDetail || '',
-        start: c.date || '',
-        link: '',
-        source: 'espn',
+        start: c.date || '', link: '', source: 'espn',
         round: ev.name || 'FIFA World Cup'
       };
     });
-
     console.log(`[WC] ESPN fallback: ${espnMatches.length} matches`);
-    if (espnMatches.length > 0) {
-      injectMatchChannels(espnMatches);
-    }
+    if (espnMatches.length > 0) injectMatchChannels(espnMatches);
   } catch(e2) {
     console.error('[WC] ESPN fallback also failed:', e2.message);
   }
