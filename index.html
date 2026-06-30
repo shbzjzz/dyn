@@ -1397,8 +1397,13 @@ function playEmbed(url, m) {
   $iframe.onload = function() {
     hideOverlay();
   };
-  // Fallback: hide overlay after 15s even if onload doesn't fire
-  setTimeout(() => { hideOverlay(); }, 15000);
+  $iframe.onerror = function() {
+    hideOverlay();
+    showOverlay('Failed to load stream. Try another server.');
+    setTimeout(() => { hideOverlay(); }, 5000);
+  };
+  // Fallback: hide overlay after 25s even if onload doesn't fire (resolver needs time for 2-3 fetches)
+  setTimeout(() => { hideOverlay(); }, 25000);
   if (m) {
     const name = `${m.team1} vs ${m.team2}`;
     $infoName.textContent = name;
