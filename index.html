@@ -249,7 +249,6 @@ function formatMatchTime(isoString) {
 }
 
 function getMatchStatus(m) {
-  // Only trust explicitly valid statuses if they are from ESPN
   if (m.source === 'espn' && (m.status === 'live' || m.status === 'finished')) return m.status;
   
   const now = Date.now();
@@ -261,7 +260,6 @@ function getMatchStatus(m) {
   if (startTs > 0 && startTs <= now) return 'live';
   if (startTs > now) return 'upcoming';
   
-  // Default to upcoming if we don't have valid times
   return 'upcoming';
 }
 
@@ -333,13 +331,9 @@ function parseGenericHTML(html, sourceLabel, baseUrl) {
         let absUrl = href;
         try { absUrl = new URL(href, baseUrl).href; } catch(e) {}
         
-        let timeStr = '';
-        const timeM = text.match(/\b(\d{1,2}:\d{2}\s*(?:AM|PM)?)\b/i);
-        if (timeM) timeStr = timeM[1].trim();
-        
         matches.push({ 
           team1, team2, 
-          time: timeStr, 
+          time: '', 
           result: '', 
           link: absUrl, 
           start: '', 
@@ -448,7 +442,7 @@ function injectMatchChannels(matches) {
     } else if (status === 'upcoming') { 
       icon = '⏰'; 
       let timeStr = formatMatchTime(m.start);
-      if (!timeStr) timeStr = m.time || 'Upcoming'; // m.time comes from generic parser
+      if (!timeStr) timeStr = 'Upcoming';
       badge = timeStr; 
     } else { 
       icon = '🏁'; badge = (m.result || 'FT'); 
