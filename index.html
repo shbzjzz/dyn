@@ -331,9 +331,13 @@ function parseGenericHTML(html, sourceLabel, baseUrl) {
         let absUrl = href;
         try { absUrl = new URL(href, baseUrl).href; } catch(e) {}
         
+        let timeStr = '';
+        const timeM = text.match(/\b(\d{1,2}:\d{2}\s*(?:AM|PM)?)\b/i);
+        if (timeM) timeStr = timeM[1].trim();
+        
         matches.push({ 
           team1, team2, 
-          time: '', 
+          time: timeStr, 
           result: '', 
           link: absUrl, 
           start: '', 
