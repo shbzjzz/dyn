@@ -175,27 +175,14 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 
 <script>
 const WORKER = 'https://m3u.shabeershz21.workers.dev';
-const CORS_PROXIES = [
-  'https://api.codetabs.com/v1/proxy/?quest=',
-  'https://api.allorigins.win/raw?url=',
-  'https://corsproxy.io/?url='
-];
-const SCRAPE_URLS = [
-  { url: 'https://www.epicsports.in/', label: 'epicsports' },
-  { url: 'https://www.hellosports.online/', label: 'hellosports' }
-];
-
 const COUNTRY_3TO2 = { ARG:'AR',AUS:'AU',BEL:'BE',BRA:'BR',CAN:'CA',CHI:'CL',COL:'CO',CRC:'CR',CRO:'HR',DEN:'DK',ECU:'EC',ENG:'GB',ESP:'ES',FRA:'FR',GER:'DE',GHA:'GH',IRN:'IR',ITA:'IT',JPN:'JP',KOR:'KR',MEX:'MX',MAR:'MA',NED:'NL',NGA:'NG',PAN:'PA',PER:'PE',POL:'PL',POR:'PT',QAT:'QA',SAU:'SA',SEN:'SN',SRB:'RS',SUI:'CH',TUN:'TN',URU:'UY',USA:'US',WAL:'GB',NOR:'NO',SWE:'SE',CIV:'CI',TUR:'TR',CHN:'CN',KSA:'SA',UAE:'AE',UKR:'UA',RUS:'RU',SVK:'SK',SVN:'SI',ALG:'DZ',EGY:'EG',MLI:'ML',GAB:'GA',COD:'CD',CGO:'CG',RSA:'ZA',TOG:'TG',EQG:'GQ',ANG:'AO',CPV:'CV',ZIM:'ZW',ZAM:'ZM',TAN:'TZ',KEN:'KE',UGA:'UG',GAM:'GM',GUI:'GN',MAD:'MG',COM:'KM',SEY:'SC',MRI:'MU',NAM:'NA',LSO:'LS',BOT:'BW',SWZ:'SZ',MOZ:'MZ',MWI:'MW',LBA:'LY',SUD:'SD',SSD:'SS',ETH:'ET',ERI:'ER',DJI:'DJ',SOM:'SO',BRN:'BN',TLS:'TL',MYA:'MM',THA:'TH',LAO:'LA',VIE:'VN',KHM:'KH',MAS:'MY',SIN:'SG',INA:'ID',PHI:'PH',PRK:'KP',TPE:'TW',HKG:'HK',MAC:'MO',AFG:'AF',PAK:'PK',IND:'IN',BAN:'BD',SRI:'LK',MDV:'MV',NEP:'NP',BHU:'BT',TJK:'TJ',UZB:'UZ',TKM:'TM',KGZ:'KG',KAZ:'KZ',MGL:'MN',SYR:'SY',LBN:'LB',ISR:'IL',PSE:'PS',JOR:'JO',IRQ:'IQ',KUW:'KW',BAH:'BH',OMA:'OM',YEM:'YE',SCO:'GB',NIR:'GB',FRO:'FO',ISL:'IS',LUX:'LU',AND:'AD',SMR:'SM',MLT:'MT',LIE:'LI',MON:'MC',VAT:'VA',GIB:'GI',BLR:'BY',MDA:'MD',GEO:'GE',ARM:'AM',AZE:'AZ',KOS:'XK',BIH:'BA',MNE:'ME',MKD:'MK',ALB:'AL',HUN:'HU',CZE:'CZ',LTU:'LT',LVA:'LV',EST:'EE',FIN:'FI',IRL:'IE',AUT:'AT' };
-const TEAM_NAME_TO_CODE = { 'argentina':'AR','australia':'AU','belgium':'BE','brazil':'BR','canada':'CA','chile':'CL','colombia':'CO','costa rica':'CR','croatia':'HR','denmark':'DK','ecuador':'EC','england':'GB','spain':'ES','france':'FR','germany':'DE','ghana':'GH','iran':'IR','italy':'IT','japan':'JP','south korea':'KR','korea republic':'KR','mexico':'MX','morocco':'MA','netherlands':'NL','nigeria':'NG','panama':'PA','peru':'PE','poland':'PL','portugal':'PT','qatar':'QA','saudi arabia':'SA','senegal':'SN','serbia':'RS','switzerland':'CH','tunisia':'TN','uruguay':'UY','usa':'US','united states':'US','wales':'GB','norway':'NO','sweden':'SE','ivory coast':'CI','turkey':'TR','china':'CN','ukraine':'UA','russia':'RU','slovakia':'SK','slovenia':'SI','algeria':'DZ','egypt':'EG','mali':'ML','gabon':'GA','dr congo':'CD','congo':'CG','south africa':'ZA','togo':'TG','equatorial guinea':'GQ','angola':'AO','cape verde':'CV','zimbabwe':'ZW','zambia':'ZM','tanzania':'TZ','kenya':'KE','uganda':'UG','gambia':'GM','guinea':'GN','madagascar':'MG','comoros':'KM','seychelles':'SC','mauritius':'MU','namibia':'NA','lesotho':'LS','botswana':'BW','eswatini':'SZ','mozambique':'MZ','malawi':'MW','libya':'LY','sudan':'SD','south sudan':'SS','ethiopia':'ET','eritrea':'ER','djibouti':'DJ','somalia':'SO','brunei':'BN','timor-leste':'TL','myanmar':'MM','thailand':'TH','laos':'LA','vietnam':'VN','cambodia':'KH','malaysia':'MY','singapore':'SG','indonesia':'ID','philippines':'PH','north korea':'KP','taiwan':'TW','hong kong':'HK','macau':'MO','afghanistan':'AF','pakistan':'PK','india':'IN','bangladesh':'BD','sri lanka':'LK','maldives':'MV','nepal':'NP','bhutan':'BT','tajikistan':'TJ','uzbekistan':'UZ','turkmenistan':'TM','kyrgyzstan':'KG','kazakhstan':'KZ','mongolia':'MN','syria':'SY','lebanon':'LB','israel':'IL','palestine':'PS','jordan':'JO','iraq':'IQ','kuwait':'KW','bahrain':'BH','oman':'OM','yemen':'YE','scotland':'GB','northern ireland':'GB','faroe islands':'FO','iceland':'IS','luxembourg':'LU','andorra':'AD','san marino':'SM','malta':'MT','liechtenstein':'LI','monaco':'MC','vatican city':'VA','gibraltar':'GI','belarus':'BY','moldova':'MD','georgia':'GE','armenia':'AM','azerbaijan':'AZ','kosovo':'XK','bosnia':'BA','montenegro':'ME','macedonia':'MK','north macedonia':'MK','albania':'AL','hungary':'HU','czech republic':'CZ','czechia':'CZ','lithuania':'LT','latvia':'LV','estonia':'EE','finland':'FI','ireland':'IE','austria':'AT' };
 
 function codeToFlag(nameOrCode, size = 'normal') {
   if (!nameOrCode) return '';
   const c = String(nameOrCode).toUpperCase().trim();
   let code2 = COUNTRY_3TO2[c];
-  if (!code2) code2 = TEAM_NAME_TO_CODE[c.toLowerCase()];
   if (!code2 && c.length >= 2 && c.length <= 3) code2 = c.substring(0, 2);
   if (!code2) return '<i class="fas fa-globe" style="color:#94a3b8"></i>';
-  
   const cls = size === 'small' ? 'flag-img-small' : (size === 'large' ? 'flag-img-large' : 'flag-img');
   return `<img class="${cls}" src="https://flagcdn.com/h40/${code2.toLowerCase()}.png" srcset="https://flagcdn.com/h80/${code2.toLowerCase()}.png 2x" alt="${c}">`;
 }
@@ -204,7 +191,6 @@ let CHANNELS = [];
 let activeChannel = null;
 let isMobile = false;
 let wcMatches = [];
-let matchSource = '';
 let countdownInterval = null;
 let activeCategory = 'all';
 
@@ -250,16 +236,13 @@ function formatMatchTime(isoString) {
 
 function getMatchStatus(m) {
   if (m.source === 'espn' && (m.status === 'live' || m.status === 'finished')) return m.status;
-  
   const now = Date.now();
   let startTs = 0, endTs = 0;
   if (m.start) { const sd = new Date(m.start); if (!isNaN(sd.getTime())) startTs = sd.getTime(); }
   if (m.end) { const ed = new Date(m.end); if (!isNaN(ed.getTime())) endTs = ed.getTime(); }
-  
   if (endTs > 0 && endTs <= now) return 'finished';
   if (startTs > 0 && startTs <= now) return 'live';
   if (startTs > now) return 'upcoming';
-  
   return 'upcoming';
 }
 
@@ -273,136 +256,9 @@ function checkMobile() {
   else { sidebar.style.display = 'flex'; mobileBar.style.display = 'none'; }
 }
 
-function cleanHTML(html) { if (!html) return ''; return html.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<script[\s\S]*?<\/script>/gi, ''); }
-
-function parseMatchCards(html, sourceLabel) {
-  const matches = [];
-  if (!html) return matches;
-  const cleaned = cleanHTML(html);
-  const openerRe = /<div[^>]*class\s*=\s*["'][^"']*match-event[^"']*["'][^>]*>/gi;
-  let openerMatch;
-  while ((openerMatch = openerRe.exec(cleaned)) !== null) {
-    const startIdx = openerMatch.index;
-    const openerTag = openerMatch[0];
-    let depth = 1;
-    let i = startIdx + openerTag.length;
-    while (i < cleaned.length && depth > 0) {
-      const openDiv = cleaned.indexOf('<div', i);
-      const closeDiv = cleaned.indexOf('</div>', i);
-      if (closeDiv === -1) break;
-      if (openDiv !== -1 && openDiv < closeDiv) { depth++; i = openDiv + 4; } 
-      else { depth--; i = closeDiv + 6; }
-    }
-    const block = cleaned.substring(startIdx, i);
-    let result = '', start = '', end = '', team1 = '', team2 = '', link = '';
-    const resultM = openerTag.match(/data-result\s*=\s*["']([^"']*)["']/i); if (resultM) result = resultM[1];
-    const startM = openerTag.match(/data-start\s*=\s*["']([^"']*)["']/i); if (startM) start = startM[1];
-    const endM = openerTag.match(/data-gameends\s*=\s*["']([^"']*)["']/i); if (endM) end = endM[1];
-    const t1M = block.match(/first-team[\s\S]*?team-name[^>]*>([^<]*)/i); if (t1M) team1 = t1M[1].trim();
-    const t2M = block.match(/left-team[\s\S]*?team-name[^>]*>([^<]*)/i); if (t2M) team2 = t2M[1].trim();
-    const linkM = block.match(/href\s*=\s*["']([^"']+)["']/i); if (linkM) link = linkM[1].trim();
-    if (team1 || team2 || link) {
-      const key = (team1 + '-' + team2).toLowerCase().trim();
-      if (!matches.some(m => (m.team1 + '-' + m.team2).toLowerCase().trim() === key)) {
-        matches.push({ team1, team2, result, link, start, end, source: sourceLabel });
-      }
-    }
-  }
-  return matches;
-}
-
-function parseGenericHTML(html, sourceLabel, baseUrl) {
-  const matches = [];
-  if (!html) return matches;
-  const cleaned = cleanHTML(html);
-  const linkRe = /<a[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-  let linkM;
-  while ((linkM = linkRe.exec(cleaned)) !== null) {
-    const href = linkM[1];
-    const inner = linkM[2];
-    const text = inner.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    
-    const vsM = text.match(/([A-Za-z][A-Za-z\s.]+?)\s+vs\.?\s+([A-Za-z][A-Za-z\s.]+)/i);
-    if (vsM && href && !href.includes('javascript:') && !href.startsWith('#') && !/google|facebook|twitter|youtube|blogger|blogspot|instagram|whatsapp|telegram|t\.me/i.test(href)) {
-      const team1 = vsM[1].trim();
-      const team2 = vsM[2].trim();
-      const key = (team1 + '-' + team2).toLowerCase();
-      if (!matches.some(m => (m.team1 + '-' + m.team2).toLowerCase() === key)) {
-        let absUrl = href;
-        try { absUrl = new URL(href, baseUrl).href; } catch(e) {}
-        
-        let timeStr = '';
-        const timeM = text.match(/\b(\d{1,2}:\d{2}\s*(?:AM|PM)?)\b/i);
-        if (timeM) timeStr = timeM[1].trim();
-        
-        matches.push({ 
-          team1, team2, 
-          time: timeStr, 
-          result: '', 
-          link: absUrl, 
-          start: '', 
-          end: '', 
-          round: '', 
-          source: sourceLabel 
-        });
-      }
-    }
-  }
-  return matches;
-}
-
-async function fetchViaCORS(url) {
-  for (const proxyBase of CORS_PROXIES) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      let proxyUrl = proxyBase.includes('thingproxy') ? proxyBase + url : proxyBase + encodeURIComponent(url);
-      const res = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(timeout);
-      if (!res.ok) continue;
-      const text = await res.text();
-      if (text && text.length > 100) return text;
-    } catch (e) {}
-  }
-  return null;
-}
-
 async function fetchWCMatches() {
   try {
-    const res = await fetch(WORKER + '/matches');
-    if (res.ok) {
-      const data = await res.json();
-      if (data.matches && data.matches.length > 0) {
-        matchSource = data.source || 'worker';
-        wcMatches = data.matches;
-        injectMatchChannels(wcMatches);
-        processWCMatches(wcMatches);
-        return;
-      }
-    }
-  } catch (e) {}
-
-  for (const source of SCRAPE_URLS) {
-    try {
-      const html = await fetchViaCORS(source.url);
-      if (!html) continue;
-      let matches = parseMatchCards(html, source.label);
-      if (matches.length === 0) matches = parseGenericHTML(html, source.label, source.url);
-      if (matches.length > 0) {
-        matchSource = source.label;
-        wcMatches = matches;
-        injectMatchChannels(matches);
-        processWCMatches(matches);
-        return;
-      }
-    } catch (e) {}
-  }
-  await tryESPNFallback();
-}
-
-async function tryESPNFallback() {
-  try {
-    const res = await fetch(WORKER + '/scoreboard');
+    const res = await fetch(WORKER + '/schedule');
     if (!res.ok) return;
     const data = await res.json();
     const espnMatches = [];
@@ -415,17 +271,32 @@ async function tryESPNFallback() {
           let status = 'upcoming';
           if (comp.status?.type?.state === 'in') status = 'live';
           else if (comp.status?.type?.state === 'post') status = 'finished';
+          
+          let endIso = '';
+          if (comp.date) {
+            const endDate = new Date(comp.date);
+            endDate.setMinutes(endDate.getMinutes() + 105);
+            endIso = endDate.toISOString();
+          }
+          
           espnMatches.push({
-            team1: t1.team?.displayName || '', team2: t2.team?.displayName || '',
-            result: '', link: '', start: comp.date || ev.date || '', end: '', round: ev.note || '',
-            source: 'espn', status, score1: t1.score || '', score2: t2.score || ''
+            team1: t1.team?.displayName || '', 
+            team2: t2.team?.displayName || '',
+            team1Code: t1.team?.abbreviation || '',
+            team2Code: t2.team?.abbreviation || '',
+            result: t1.score && t2.score ? `${t1.score}-${t2.score}` : '',
+            link: '', 
+            start: comp.date || ev.date || '', 
+            end: endIso, 
+            round: ev.note || '',
+            source: 'espn', 
+            status 
           });
         }
       }
     }
     if (espnMatches.length > 0) {
       wcMatches = espnMatches;
-      matchSource = 'espn';
       injectMatchChannels(espnMatches);
       processWCMatches(espnMatches);
     }
@@ -433,10 +304,10 @@ async function tryESPNFallback() {
 }
 
 function injectMatchChannels(matches) {
+  CHANNELS = []; // Reset channels
   for (let i = 0; i < matches.length; i++) {
     const m = matches[i];
     const id = 'wc-match-' + i;
-    if (CHANNELS.some(c => c.id === id)) continue;
     const status = getMatchStatus(m);
     const flag1 = codeToFlag(m.team1Code || m.team1, 'small');
     const flag2 = codeToFlag(m.team2Code || m.team2, 'small');
@@ -595,18 +466,31 @@ function hideCountdown() {
   if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
 }
 
-function fetchWCStream(m) {
+async function fetchWCStream(m) {
   const status = getMatchStatus(m);
   if (status === 'upcoming') {
     showUpcomingMatch(m);
     return;
   }
   
-  if (!m.link) {
-    showError('Stream not yet available for this match', 5000);
-    return;
+  showOverlay('SEARCHING FOR STREAM...');
+  hideError();
+  
+  try {
+    // Ask worker to find the blog post URL for this specific match
+    const findRes = await fetch(`${WORKER}/find-stream?team1=${encodeURIComponent(m.team1)}&team2=${encodeURIComponent(m.team2)}`);
+    const findData = await findRes.json();
+    
+    if (findData.found && findData.url) {
+      playEmbed(WORKER + '/stream?url=' + encodeURIComponent(findData.url), m);
+    } else {
+      hideOverlay();
+      showError('Stream link not found on source sites yet.', 5000);
+    }
+  } catch (e) {
+    hideOverlay();
+    showError('Error finding stream. Try again later.', 5000);
   }
-  playEmbed(WORKER + '/stream?url=' + encodeURIComponent(m.link), m);
 }
 
 function playEmbed(url, m) {
