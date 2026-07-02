@@ -40,7 +40,7 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 .channel-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 4px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: var(--glass-bg); }
 .channel-item:hover { background: var(--glass-bg-hover); border-color: var(--glass-border-hover); }
 .channel-item.active { background: var(--accent-dim); border-color: var(--accent); }
-.channel-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--bg-deep); font-size: 18px; flex-shrink: 0; }
+.channel-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--bg-deep); font-size: 18px; flex-shrink: 0; overflow: hidden; }
 .channel-info { flex: 1; min-width: 0; }
 .channel-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .channel-meta { font-size: 10px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
@@ -56,7 +56,9 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 #countdownOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bg-deep), var(--bg-mid)); z-index: 10; text-align: center; padding: 20px; }
 .countdown-teams { display: flex; align-items: center; gap: 40px; margin-bottom: 30px; }
 .countdown-team { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.team-flag { font-size: 64px; } .team-name-big { font-family: var(--font-heading); font-size: 22px; font-weight: 600; }
+.team-flag { width: 80px; height: 55px; display: flex; align-items: center; justify-content: center; }
+.team-flag img { max-width: 100%; max-height: 100%; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+.team-name-big { font-family: var(--font-heading); font-size: 22px; font-weight: 600; }
 .vs-text { font-family: var(--font-heading); font-size: 28px; color: var(--accent); font-weight: 700; }
 .countdown-timer { font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--accent-bright); letter-spacing: 4px; margin: 10px 0; }
 .countdown-label { color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
@@ -70,7 +72,8 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 
 #infoBar { padding: 12px 20px; background: var(--bg-mid); border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 16px; }
 .now-playing { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-.now-playing-flag { font-size: 22px; }
+.now-playing-flag { display: flex; align-items: center; gap: 8px; }
+.now-playing-flag img { height: 22px; border-radius: 4px; }
 .now-playing-name { font-family: var(--font-heading); font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .now-playing-score { font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--accent-bright); margin-left: 10px; }
 .player-controls { display: flex; align-items: center; gap: 10px; }
@@ -85,7 +88,9 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
 .score-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; }
 .score-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
-.score-team { display: flex; align-items: center; gap: 6px; } .score-flag { font-size: 14px; } .score-val { font-weight: 700; font-family: var(--font-heading); }
+.score-team { display: flex; align-items: center; gap: 6px; }
+.score-flag img { height: 14px; border-radius: 2px; vertical-align: middle; }
+.score-val { font-weight: 700; font-family: var(--font-heading); }
 .score-status { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px; text-align: center; }
 .score-status.live { color: var(--red); font-weight: 600; } .score-status.final { color: var(--text-faint); }
 .standings-table { width: 100%; border-collapse: collapse; font-size: 11px; }
@@ -93,6 +98,7 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 .standings-table td { padding: 6px 8px; border-bottom: 1px solid var(--glass-border); }
 .standings-table tr:hover td { background: var(--glass-bg-hover); }
 .standings-team { display: flex; align-items: center; gap: 6px; }
+.standings-team img { height: 14px; border-radius: 2px; }
 
 #mobileBar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-mid); border-top: 1px solid var(--glass-border); padding: 8px; overflow-x: auto; white-space: nowrap; z-index: 100; gap: 8px; }
 #mobileBar::-webkit-scrollbar { display: none; }
@@ -101,7 +107,7 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 
 @media (max-width: 768px) {
   #sidebar { display: none; } #mainArea { margin-left: 0; padding-bottom: 60px; } #mobileBar { display: flex; } #playerWrap { margin: 8px; }
-  .countdown-teams { gap: 20px; } .team-flag { font-size: 48px; } .countdown-timer { font-size: 36px; } .now-playing-name { font-size: 14px; }
+  .countdown-teams { gap: 20px; } .team-flag { width: 60px; height: 40px; } .countdown-timer { font-size: 36px; } .now-playing-name { font-size: 14px; }
 }
 .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(248,113,113,0.15); border: 1px solid var(--red); color: var(--red); padding: 12px 20px; border-radius: var(--radius-md); font-size: 14px; z-index: 15; display: none; text-align: center; max-width: 80%; }
 .error-msg.show { display: block; }
@@ -124,9 +130,15 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
     
     <div id="countdownOverlay">
       <div class="countdown-teams">
-        <div class="countdown-team"><div class="team-flag" id="cdFlag1">🏳️</div><div class="team-name-big" id="cdTeam1">Team 1</div></div>
+        <div class="countdown-team">
+          <div class="team-flag" id="cdFlag1"></div>
+          <div class="team-name-big" id="cdTeam1">Team 1</div>
+        </div>
         <div class="vs-text">VS</div>
-        <div class="countdown-team"><div class="team-flag" id="cdFlag2">🏳️</div><div class="team-name-big" id="cdTeam2">Team 2</div></div>
+        <div class="countdown-team">
+          <div class="team-flag" id="cdFlag2"></div>
+          <div class="team-name-big" id="cdTeam2">Team 2</div>
+        </div>
       </div>
       <div class="countdown-label">Match Starts In</div>
       <div class="countdown-timer" id="cdTimer">--:--:--:--</div>
@@ -165,8 +177,7 @@ const WORKER = 'https://m3u.shabeershz21.workers.dev';
 const CORS_PROXIES = [
   'https://api.codetabs.com/v1/proxy/?quest=',
   'https://api.allorigins.win/raw?url=',
-  'https://corsproxy.io/?url=',
-  'https://thingproxy.freeboard.io/fetch/'
+  'https://corsproxy.io/?url='
 ];
 const SCRAPE_URLS = [
   { url: 'https://www.epicsports.in/', label: 'epicsports' },
@@ -174,6 +185,43 @@ const SCRAPE_URLS = [
 ];
 
 const COUNTRY_3TO2 = { ARG:'AR',AUS:'AU',BEL:'BE',BRA:'BR',CAN:'CA',CHI:'CL',COL:'CO',CRC:'CR',CRO:'HR',DEN:'DK',ECU:'EC',ENG:'GB',ESP:'ES',FRA:'FR',GER:'DE',GHA:'GH',IRN:'IR',ITA:'IT',JPN:'JP',KOR:'KR',MEX:'MX',MAR:'MA',NED:'NL',NGA:'NG',PAN:'PA',PER:'PE',POL:'PL',POR:'PT',QAT:'QA',SAU:'SA',SEN:'SN',SRB:'RS',SUI:'CH',TUN:'TN',URU:'UY',USA:'US',WAL:'GB',NOR:'NO',SWE:'SE',CIV:'CI',TUR:'TR',CHN:'CN',KSA:'SA',UAE:'AE',UKR:'UA',RUS:'RU',SVK:'SK',SVN:'SI',ALG:'DZ',EGY:'EG',MLI:'ML',GAB:'GA',COD:'CD',CGO:'CG',RSA:'ZA',TOG:'TG',EQG:'GQ',ANG:'AO',CPV:'CV',ZIM:'ZW',ZAM:'ZM',TAN:'TZ',KEN:'KE',UGA:'UG',GAM:'GM',GUI:'GN',MAD:'MG',COM:'KM',SEY:'SC',MRI:'MU',NAM:'NA',LSO:'LS',BOT:'BW',SWZ:'SZ',MOZ:'MZ',MWI:'MW',LBA:'LY',SUD:'SD',SSD:'SS',ETH:'ET',ERI:'ER',DJI:'DJ',SOM:'SO',BRN:'BN',TLS:'TL',MYA:'MM',THA:'TH',LAO:'LA',VIE:'VN',KHM:'KH',MAS:'MY',SIN:'SG',INA:'ID',PHI:'PH',PRK:'KP',TPE:'TW',HKG:'HK',MAC:'MO',AFG:'AF',PAK:'PK',IND:'IN',BAN:'BD',SRI:'LK',MDV:'MV',NEP:'NP',BHU:'BT',TJK:'TJ',UZB:'UZ',TKM:'TM',KGZ:'KG',KAZ:'KZ',MGL:'MN',SYR:'SY',LBN:'LB',ISR:'IL',PSE:'PS',JOR:'JO',IRQ:'IQ',KUW:'KW',BAH:'BH',OMA:'OM',YEM:'YE',SCO:'GB',NIR:'GB',FRO:'FO',ISL:'IS',LUX:'LU',AND:'AD',SMR:'SM',MLT:'MT',LIE:'LI',MON:'MC',VAT:'VA',GIB:'GI',BLR:'BY',MDA:'MD',GEO:'GE',ARM:'AM',AZE:'AZ',KOS:'XK',BIH:'BA',MNE:'ME',MKD:'MK',ALB:'AL',HUN:'HU',CZE:'CZ',LTU:'LT',LVA:'LV',EST:'EE',FIN:'FI',IRL:'IE',AUT:'AT' };
+
+// Map for full team names to 2-letter codes (Fallback for scraped text)
+const TEAM_NAME_TO_CODE = {
+  'argentina': 'AR', 'australia': 'AU', 'belgium': 'BE', 'brazil': 'BR', 'canada': 'CA', 'chile': 'CL', 'colombia': 'CO',
+  'costa rica': 'CR', 'croatia': 'HR', 'denmark': 'DK', 'ecuador': 'EC', 'england': 'GB', 'spain': 'ES', 'france': 'FR',
+  'germany': 'DE', 'ghana': 'GH', 'iran': 'IR', 'italy': 'IT', 'japan': 'JP', 'south korea': 'KR', 'korea republic': 'KR', 'mexico': 'MX',
+  'morocco': 'MA', 'netherlands': 'NL', 'nigeria': 'NG', 'panama': 'PA', 'peru': 'PE', 'poland': 'PL', 'portugal': 'PT',
+  'qatar': 'QA', 'saudi arabia': 'SA', 'senegal': 'SN', 'serbia': 'RS', 'switzerland': 'CH', 'tunisia': 'TN', 'uruguay': 'UY',
+  'usa': 'US', 'united states': 'US', 'wales': 'GB', 'norway': 'NO', 'sweden': 'SE', 'ivory coast': 'CI', 'turkey': 'TR', 'china': 'CN',
+  'ukraine': 'UA', 'russia': 'RU', 'slovakia': 'SK', 'slovenia': 'SI', 'algeria': 'DZ', 'egypt': 'EG', 'mali': 'ML', 'gabon': 'GA',
+  'dr congo': 'CD', 'congo': 'CG', 'south africa': 'ZA', 'togo': 'TG', 'equatorial guinea': 'GQ', 'angola': 'AO', 'cape verde': 'CV',
+  'zimbabwe': 'ZW', 'zambia': 'ZM', 'tanzania': 'TZ', 'kenya': 'KE', 'uganda': 'UG', 'gambia': 'GM', 'guinea': 'GN', 'madagascar': 'MG',
+  'comoros': 'KM', 'seychelles': 'SC', 'mauritius': 'MU', 'namibia': 'NA', 'lesotho': 'LS', 'botswana': 'BW', 'eswatini': 'SZ',
+  'mozambique': 'MZ', 'malawi': 'MW', 'libya': 'LY', 'sudan': 'SD', 'south sudan': 'SS', 'ethiopia': 'ET', 'eritrea': 'ER',
+  'djibouti': 'DJ', 'somalia': 'SO', 'brunei': 'BN', 'timor-leste': 'TL', 'myanmar': 'MM', 'thailand': 'TH', 'laos': 'LA',
+  'vietnam': 'VN', 'cambodia': 'KH', 'malaysia': 'MY', 'singapore': 'SG', 'indonesia': 'ID', 'philippines': 'PH', 'north korea': 'KP',
+  'taiwan': 'TW', 'hong kong': 'HK', 'macau': 'MO', 'afghanistan': 'AF', 'pakistan': 'PK', 'india': 'IN', 'bangladesh': 'BD',
+  'sri lanka': 'LK', 'maldives': 'MV', 'nepal': 'NP', 'bhutan': 'BT', 'tajikistan': 'TJ', 'uzbekistan': 'UZ', 'turkmenistan': 'TM',
+  'kyrgyzstan': 'KG', 'kazakhstan': 'KZ', 'mongolia': 'MN', 'syria': 'SY', 'lebanon': 'LB', 'israel': 'IL', 'palestine': 'PS',
+  'jordan': 'JO', 'iraq': 'IQ', 'kuwait': 'KW', 'bahrain': 'BH', 'oman': 'OM', 'yemen': 'YE', 'scotland': 'GB', 'northern ireland': 'GB',
+  'faroe islands': 'FO', 'iceland': 'IS', 'luxembourg': 'LU', 'andorra': 'AD', 'san marino': 'SM', 'malta': 'MT', 'liechtenstein': 'LI',
+  'monaco': 'MC', 'vatican city': 'VA', 'gibraltar': 'GI', 'belarus': 'BY', 'moldova': 'MD', 'georgia': 'GE', 'armenia': 'AM',
+  'azerbaijan': 'AZ', 'kosovo': 'XK', 'bosnia': 'BA', 'montenegro': 'ME', 'macedonia': 'MK', 'north macedonia': 'MK', 'albania': 'AL',
+  'hungary': 'HU', 'czech republic': 'CZ', 'czechia': 'CZ', 'lithuania': 'LT', 'latvia': 'LV', 'estonia': 'EE', 'finland': 'FI',
+  'ireland': 'IE', 'austria': 'AT'
+};
+
+// Returns an HTML image element for reliable cross-platform flags
+function codeToFlag(nameOrCode) {
+  if (!nameOrCode) return '';
+  const c = String(nameOrCode).toUpperCase().trim();
+  let code2 = COUNTRY_3TO2[c];
+  if (!code2) code2 = TEAM_NAME_TO_CODE[c.toLowerCase()];
+  if (!code2 && c.length >= 2 && c.length <= 3) code2 = c.substring(0, 2);
+  if (!code2) return '';
+  return `<img src="https://flagcdn.com/h40/${code2.toLowerCase()}.png" srcset="https://flagcdn.com/h80/${code2.toLowerCase()}.png 2x" alt="${c}">`;
+}
 
 let CHANNELS = [];
 let activeChannel = null;
@@ -209,14 +257,6 @@ const cdTeam1 = document.getElementById('cdTeam1');
 const cdTeam2 = document.getElementById('cdTeam2');
 const cdTimer = document.getElementById('cdTimer');
 const cdNotice = document.getElementById('cdNotice');
-
-function codeToFlag(code3) {
-  if (!code3) return '🏳️';
-  const c = String(code3).toUpperCase().trim();
-  let code2 = COUNTRY_3TO2[c] || c.substring(0, 2);
-  if (!code2 || code2.length < 2) return '🏳️';
-  try { return String.fromCodePoint(127397 + code2.charCodeAt(0)) + String.fromCodePoint(127397 + code2.charCodeAt(1)); } catch (e) { return '🏳️'; }
-}
 
 function formatMatchTime(isoString) {
   if (!isoString) return '';
@@ -333,7 +373,6 @@ async function fetchViaCORS(url) {
 }
 
 async function fetchWCMatches() {
-  // 1. Try server-side via worker first (bypasses local firewalls)
   try {
     const res = await fetch(WORKER + '/matches');
     if (res.ok) {
@@ -348,7 +387,6 @@ async function fetchWCMatches() {
     }
   } catch (e) {}
 
-  // 2. Client-side CORS proxies fallback
   for (const source of SCRAPE_URLS) {
     try {
       const html = await fetchViaCORS(source.url);
@@ -364,8 +402,6 @@ async function fetchWCMatches() {
       }
     } catch (e) {}
   }
-  
-  // 3. ESPN fallback
   await tryESPNFallback();
 }
 
@@ -471,41 +507,54 @@ function processWCMatches(matches) {
 
 function showLiveMatch(m) {
   hideCountdown();
-  playerWrap.style.display = 'block';
+  video.style.display = 'none';
+  iframe.style.display = 'block';
   fetchWCStream(m);
-  npFlag.textContent = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
+  npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
   npName.textContent = m.team1 + ' vs ' + m.team2;
   npScore.textContent = m.result || '';
 }
 
 function showUpcomingMatch(m) {
   showCountdown(m);
-  playerWrap.style.display = 'none';
-  npFlag.textContent = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
+  video.style.display = 'none';
+  iframe.style.display = 'none';
+  countdownOverlay.style.display = 'flex';
+  
+  npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
   npName.textContent = m.team1 + ' vs ' + m.team2;
   npScore.textContent = '';
 }
 
 function showFinishedMatch(m) {
   hideCountdown();
-  playerWrap.style.display = 'none';
-  npFlag.textContent = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
+  video.style.display = 'none';
+  iframe.style.display = 'none';
+  countdownOverlay.style.display = 'none';
+  
+  npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
   npName.textContent = m.team1 + ' vs ' + m.team2;
   npScore.textContent = m.result || 'FT';
 }
 
 function showCountdown(m) {
-  countdownOverlay.style.display = 'flex';
-  cdFlag1.textContent = codeToFlag(m.team1Code || m.team1);
-  cdFlag2.textContent = codeToFlag(m.team2Code || m.team2);
+  cdFlag1.innerHTML = codeToFlag(m.team1Code || m.team1);
+  cdFlag2.innerHTML = codeToFlag(m.team2Code || m.team2);
   cdTeam1.textContent = m.team1;
   cdTeam2.textContent = m.team2;
+  
   if (countdownInterval) clearInterval(countdownInterval);
+  
   const updateCountdown = () => {
-    if (!m.start) { cdTimer.textContent = '--:--:--:--'; return; }
+    if (!m.start) {
+      cdTimer.textContent = '--:--:--:--';
+      cdNotice.textContent = 'Waiting for match schedule...';
+      return;
+    }
     const target = new Date(m.start).getTime();
     const now = Date.now();
     const diff = target - now;
+    
     if (diff <= 0) {
       cdTimer.textContent = '00:00:00:00';
       cdNotice.textContent = 'Match is starting!';
@@ -513,13 +562,25 @@ function showCountdown(m) {
       setTimeout(() => showLiveMatch(m), 2000);
       return;
     }
+    
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    cdTimer.textContent = String(days).padStart(2, '0') + ':' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-    cdNotice.textContent = diff <= 10 * 60 * 1000 ? 'Streaming links should be available now!' : 'Streaming links will be available 10 minutes before match';
+    
+    cdTimer.textContent = 
+      String(days).padStart(2, '0') + ':' +
+      String(hours).padStart(2, '0') + ':' +
+      String(minutes).padStart(2, '0') + ':' +
+      String(seconds).padStart(2, '0');
+    
+    if (diff <= 10 * 60 * 1000) {
+      cdNotice.textContent = 'Streaming links are now available!';
+    } else {
+      cdNotice.textContent = 'Streaming links will be available 10 minutes before the match';
+    }
   };
+  
   updateCountdown();
   countdownInterval = setInterval(updateCountdown, 1000);
 }
@@ -540,7 +601,6 @@ function fetchWCStream(m) {
 
 function playEmbed(url, m) {
   hideCountdown();
-  playerWrap.style.display = 'block';
   video.style.display = 'none';
   iframe.style.display = 'block';
   showOverlay('RESOLVING STREAM...');
@@ -551,7 +611,7 @@ function playEmbed(url, m) {
   iframe.onerror = () => { hideOverlay(); showError('Failed to load stream. Try another server.', 5000); };
   setTimeout(() => { if (!loaded) hideOverlay(); }, 25000);
   if (m) {
-    npFlag.textContent = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
+    npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
     npName.textContent = m.team1 + ' vs ' + m.team2;
     npScore.textContent = m.result || '';
   }
@@ -571,8 +631,8 @@ async function fetchScoreboard() {
       const t2 = comp.competitors[1] || {};
       const t1Name = t1.team ? t1.team.displayName : '';
       const t2Name = t2.team ? t2.team.displayName : '';
-      const t1Flag = t1.team ? codeToFlag(t1.team.abbreviation) : '🏳️';
-      const t2Flag = t2.team ? codeToFlag(t2.team.abbreviation) : '🏳️';
+      const t1Flag = t1.team ? codeToFlag(t1.team.abbreviation) : '';
+      const t2Flag = t2.team ? codeToFlag(t2.team.abbreviation) : '';
       let statusText = '', statusClass = '';
       if (comp.status?.type) {
         statusText = comp.status.type.shortDetail || comp.status.type.detail || '';
@@ -607,8 +667,8 @@ async function fetchStandings() {
           else if (s.name === 'points') pts = s.value;
         }
         const teamName = entry.team ? entry.team.displayName : '';
-        const teamFlag = entry.team ? codeToFlag(entry.team.abbreviation) : '🏳️';
-        html += `<tr><td>${i + 1}</td><td><div class="standings-team"><span class="score-flag">${teamFlag}</span>${teamName}</div></td><td>${gp}</td><td>${w}</td><td>${d}</td><td>${l}</td><td><strong>${pts}</strong></td></tr>`;
+        const teamFlag = entry.team ? codeToFlag(entry.team.abbreviation) : '';
+        html += `<tr><td>${i + 1}</td><td><div class="standings-team">${teamFlag}${teamName}</div></td><td>${gp}</td><td>${w}</td><td>${d}</td><td>${l}</td><td><strong>${pts}</strong></td></tr>`;
       }
       html += '</tbody></table></div>';
     }
