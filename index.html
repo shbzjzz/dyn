@@ -249,15 +249,20 @@ function formatMatchTime(isoString) {
 }
 
 function getMatchStatus(m) {
-  if (m.status) return m.status;
+  // Only trust explicitly valid statuses if they are from ESPN
+  if (m.source === 'espn' && (m.status === 'live' || m.status === 'finished')) return m.status;
+  
   const now = Date.now();
   let startTs = 0, endTs = 0;
   if (m.start) { const sd = new Date(m.start); if (!isNaN(sd.getTime())) startTs = sd.getTime(); }
   if (m.end) { const ed = new Date(m.end); if (!isNaN(ed.getTime())) endTs = ed.getTime(); }
-  if (startTs > 0 && startTs <= now && (endTs === 0 || endTs > now)) return 'live';
+  
   if (endTs > 0 && endTs <= now) return 'finished';
+  if (startTs > 0 && startTs <= now) return 'live';
   if (startTs > now) return 'upcoming';
-  return 'live';
+  
+  // Default to upcoming if we don't have valid times
+  return 'upcoming';
 }
 
 function showOverlay(text) { loadingText.textContent = text || 'LOADING...'; loadingOverlay.classList.add('show'); }
@@ -301,7 +306,7 @@ function parseMatchCards(html, sourceLabel) {
     if (team1 || team2 || link) {
       const key = (team1 + '-' + team2).toLowerCase().trim();
       if (!matches.some(m => (m.team1 + '-' + m.team2).toLowerCase().trim() === key)) {
-        matches.push({ team1, team2, result, link, start, end, source: sourceLabel, status: getMatchStatus({ start, end }) });
+        matches.push({ team1, team2, result, link, start, end, source: sourceLabel });
       }
     }
   }
@@ -318,6 +323,7 @@ function parseGenericHTML(html, sourceLabel, baseUrl) {
     const href = linkM[1];
     const inner = linkM[2];
     const text = inner.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    
     const vsM = text.match(/([A-Za-z][A-Za-z\s.]+?)\s+vs\.?\s+([A-Za-z][A-Za-z\s.]+)/i);
     if (vsM && href && !href.includes('javascript:') && !href.startsWith('#') && !/google|facebook|twitter|youtube|blogger|blogspot|instagram|whatsapp|telegram|t\.me/i.test(href)) {
       const team1 = vsM[1].trim();
@@ -326,7 +332,21 @@ function parseGenericHTML(html, sourceLabel, baseUrl) {
       if (!matches.some(m => (m.team1 + '-' + m.team2).toLowerCase() === key)) {
         let absUrl = href;
         try { absUrl = new URL(href, baseUrl).href; } catch(e) {}
-        matches.push({ team1, team2, time: '', result: '', link: absUrl, start: '', end: '', round: '', source: sourceLabel, status: 'live' });
+        
+        let timeStr = '';
+        const timeM = text.match(/\b(\d{1,2}:\d{2}\s*(?:AM|PM)?)\b/i);
+        if (timeM) timeStr = timeM[1].trim();
+        
+        matches.push({ 
+          team1, team2, 
+          time: timeStr, 
+          result: '', 
+          link: absUrl, 
+          start: '', 
+          end: '', 
+          round: '', 
+          source: sourceLabel 
+        });
       }
     }
   }
@@ -423,9 +443,16 @@ function injectMatchChannels(matches) {
     const flag1 = codeToFlag(m.team1Code || m.team1, 'small');
     const flag2 = codeToFlag(m.team2Code || m.team2, 'small');
     let icon = '📺', badge = '';
-    if (status === 'live') { icon = '🔴'; badge = 'LIVE'; }
-    else if (status === 'upcoming') { icon = '⏰'; badge = formatMatchTime(m.start); }
-    else { icon = '🏁'; badge = (m.result || 'FT'); }
+    if (status === 'live') { 
+      icon = '🔴'; badge = 'LIVE'; 
+    } else if (status === 'upcoming') { 
+      icon = '⏰'; 
+      let timeStr = formatMatchTime(m.start);
+      if (!timeStr) timeStr = m.time || 'Upcoming'; // m.time comes from generic parser
+      badge = timeStr; 
+    } else { 
+      icon = '🏁'; badge = (m.result || 'FT'); 
+    }
     CHANNELS.push({
       id, isWcMatch: true, matchData: m,
       channelName: flag1 + ' ' + m.team1 + ' vs ' + m.team2 + ' ' + flag2,
@@ -528,7 +555,7 @@ function showCountdown(m) {
   const updateCountdown = () => {
     if (!m.start) {
       cdTimer.textContent = '--:--:--:--';
-      cdNotice.textContent = 'Waiting for match schedule...';
+      cdNotice.textContent = 'Waiting for match schedule... Links available 10 mins before start.';
       return;
     }
     const target = new Date(m.start).getTime();
@@ -573,11 +600,8 @@ function hideCountdown() {
 function fetchWCStream(m) {
   const status = getMatchStatus(m);
   if (status === 'upcoming') {
-    const target = new Date(m.start).getTime();
-    if (target - Date.now() > 10 * 60 * 1000) {
-      showUpcomingMatch(m);
-      return;
-    }
+    showUpcomingMatch(m);
+    return;
   }
   
   if (!m.link) {
