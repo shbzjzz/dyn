@@ -23,7 +23,7 @@
   --radius-lg: 18px; --radius-md: 12px; --radius-sm: 8px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html, body { width: 100%; height: 100vh; overflow: hidden; background: var(--bg-deep); color: var(--text-primary); font-family: var(--font-body); }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg-deep); color: var(--text-primary); font-family: var(--font-body); }
 body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 20%, rgba(167,139,250,0.08) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(99,102,241,0.05) 0%, transparent 40%); pointer-events: none; z-index: 0; }
 
 #sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--bg-mid); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; z-index: 100; backdrop-filter: blur(var(--glass-blur)); }
@@ -42,22 +42,21 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 .channel-item.active { background: var(--accent-dim); border-color: var(--accent); }
 .channel-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--bg-deep); font-size: 18px; flex-shrink: 0; overflow: hidden; }
 .channel-info { flex: 1; min-width: 0; }
-.channel-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.channel-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
 .channel-meta { font-size: 10px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
 .live-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; animation: pulse 1.5s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
 .live-badge { background: var(--red); color: #fff; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; }
 
-#mainArea { margin-left: 280px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; position: relative; z-index: 1; }
-#playerWrap { flex: 1; position: relative; background: #000; margin: 16px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--glass-border); min-height: 0; }
+#mainArea { margin-left: 280px; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; position: relative; z-index: 1; }
+#playerWrap { flex: 1; position: relative; background: #000; margin: 16px; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--glass-border); min-height: 400px; }
 #video, #iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; background: #000; }
 #iframe { z-index: 1; } #video { z-index: 2; }
 
 #countdownOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--bg-deep), var(--bg-mid)); z-index: 10; text-align: center; padding: 20px; }
 .countdown-teams { display: flex; align-items: center; gap: 40px; margin-bottom: 30px; }
 .countdown-team { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.team-flag { width: 80px; height: 55px; display: flex; align-items: center; justify-content: center; }
-.team-flag img { max-width: 100%; max-height: 100%; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+.team-flag-large { width: 100px; height: 70px; display: flex; align-items: center; justify-content: center; }
 .team-name-big { font-family: var(--font-heading); font-size: 22px; font-weight: 600; }
 .vs-text { font-family: var(--font-heading); font-size: 28px; color: var(--accent); font-weight: 700; }
 .countdown-timer { font-family: var(--font-heading); font-size: 48px; font-weight: 700; color: var(--accent-bright); letter-spacing: 4px; margin: 10px 0; }
@@ -73,7 +72,6 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 #infoBar { padding: 12px 20px; background: var(--bg-mid); border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 16px; }
 .now-playing { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 .now-playing-flag { display: flex; align-items: center; gap: 8px; }
-.now-playing-flag img { height: 22px; border-radius: 4px; }
 .now-playing-name { font-family: var(--font-heading); font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .now-playing-score { font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--accent-bright); margin-left: 10px; }
 .player-controls { display: flex; align-items: center; gap: 10px; }
@@ -85,29 +83,32 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 #scoreboardSection, #standingsSection { padding: 0 16px 16px; display: grid; gap: 12px; }
 .espn-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: 14px; backdrop-filter: blur(var(--glass-blur)); }
 .espn-title { font-family: var(--font-heading); font-size: 14px; font-weight: 600; color: var(--accent-bright); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
 .score-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; }
 .score-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
 .score-team { display: flex; align-items: center; gap: 6px; }
-.score-flag img { height: 14px; border-radius: 2px; vertical-align: middle; }
 .score-val { font-weight: 700; font-family: var(--font-heading); }
 .score-status { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; margin-top: 4px; text-align: center; }
 .score-status.live { color: var(--red); font-weight: 600; } .score-status.final { color: var(--text-faint); }
-.standings-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.standings-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 10px; }
 .standings-table th { text-align: left; padding: 6px 8px; color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid var(--glass-border); }
 .standings-table td { padding: 6px 8px; border-bottom: 1px solid var(--glass-border); }
 .standings-table tr:hover td { background: var(--glass-bg-hover); }
 .standings-team { display: flex; align-items: center; gap: 6px; }
-.standings-team img { height: 14px; border-radius: 2px; }
+.group-name { font-weight: 600; margin-bottom: 6px; color: var(--accent); font-size: 12px; }
 
 #mobileBar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-mid); border-top: 1px solid var(--glass-border); padding: 8px; overflow-x: auto; white-space: nowrap; z-index: 100; gap: 8px; }
 #mobileBar::-webkit-scrollbar { display: none; }
 .mobile-channel { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; }
 .mobile-channel.active { background: var(--accent-dim); border-color: var(--accent); }
 
+.flag-img { width: 27px; height: 18px; object-fit: cover; border-radius: 2px; vertical-align: middle; display: inline-block; }
+.flag-img-small { width: 18px; height: 12px; object-fit: cover; border-radius: 2px; vertical-align: middle; display: inline-block; }
+.flag-img-large { width: 100px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
+
 @media (max-width: 768px) {
-  #sidebar { display: none; } #mainArea { margin-left: 0; padding-bottom: 60px; } #mobileBar { display: flex; } #playerWrap { margin: 8px; }
-  .countdown-teams { gap: 20px; } .team-flag { width: 60px; height: 40px; } .countdown-timer { font-size: 36px; } .now-playing-name { font-size: 14px; }
+  #sidebar { display: none; } #mainArea { margin-left: 0; padding-bottom: 60px; } #mobileBar { display: flex; } #playerWrap { margin: 8px; min-height: 250px; }
+  .countdown-teams { gap: 20px; } .team-flag-large { width: 60px; height: 40px; } .flag-img-large { width: 60px; height: 40px; } .countdown-timer { font-size: 36px; } .now-playing-name { font-size: 14px; }
 }
 .error-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(248,113,113,0.15); border: 1px solid var(--red); color: var(--red); padding: 12px 20px; border-radius: var(--radius-md); font-size: 14px; z-index: 15; display: none; text-align: center; max-width: 80%; }
 .error-msg.show { display: block; }
@@ -126,17 +127,17 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
 <main id="mainArea">
   <div id="playerWrap">
     <video id="video" style="display:none" playsinline></video>
-    <iframe id="iframe" allow="autoplay;encrypted-media;fullscreen;picture-in-picture"></iframe>
+    <iframe id="iframe" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
     
     <div id="countdownOverlay">
       <div class="countdown-teams">
         <div class="countdown-team">
-          <div class="team-flag" id="cdFlag1"></div>
+          <div class="team-flag-large" id="cdFlag1"></div>
           <div class="team-name-big" id="cdTeam1">Team 1</div>
         </div>
         <div class="vs-text">VS</div>
         <div class="countdown-team">
-          <div class="team-flag" id="cdFlag2"></div>
+          <div class="team-flag-large" id="cdFlag2"></div>
           <div class="team-name-big" id="cdTeam2">Team 2</div>
         </div>
       </div>
@@ -154,7 +155,7 @@ body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 
   
   <div id="infoBar">
     <div class="now-playing">
-      <div class="now-playing-flag" id="npFlag">🏆</div>
+      <div class="now-playing-flag" id="npFlag"></div>
       <div class="now-playing-name" id="npName">Select a match</div>
       <div class="now-playing-score" id="npScore"></div>
     </div>
@@ -185,42 +186,18 @@ const SCRAPE_URLS = [
 ];
 
 const COUNTRY_3TO2 = { ARG:'AR',AUS:'AU',BEL:'BE',BRA:'BR',CAN:'CA',CHI:'CL',COL:'CO',CRC:'CR',CRO:'HR',DEN:'DK',ECU:'EC',ENG:'GB',ESP:'ES',FRA:'FR',GER:'DE',GHA:'GH',IRN:'IR',ITA:'IT',JPN:'JP',KOR:'KR',MEX:'MX',MAR:'MA',NED:'NL',NGA:'NG',PAN:'PA',PER:'PE',POL:'PL',POR:'PT',QAT:'QA',SAU:'SA',SEN:'SN',SRB:'RS',SUI:'CH',TUN:'TN',URU:'UY',USA:'US',WAL:'GB',NOR:'NO',SWE:'SE',CIV:'CI',TUR:'TR',CHN:'CN',KSA:'SA',UAE:'AE',UKR:'UA',RUS:'RU',SVK:'SK',SVN:'SI',ALG:'DZ',EGY:'EG',MLI:'ML',GAB:'GA',COD:'CD',CGO:'CG',RSA:'ZA',TOG:'TG',EQG:'GQ',ANG:'AO',CPV:'CV',ZIM:'ZW',ZAM:'ZM',TAN:'TZ',KEN:'KE',UGA:'UG',GAM:'GM',GUI:'GN',MAD:'MG',COM:'KM',SEY:'SC',MRI:'MU',NAM:'NA',LSO:'LS',BOT:'BW',SWZ:'SZ',MOZ:'MZ',MWI:'MW',LBA:'LY',SUD:'SD',SSD:'SS',ETH:'ET',ERI:'ER',DJI:'DJ',SOM:'SO',BRN:'BN',TLS:'TL',MYA:'MM',THA:'TH',LAO:'LA',VIE:'VN',KHM:'KH',MAS:'MY',SIN:'SG',INA:'ID',PHI:'PH',PRK:'KP',TPE:'TW',HKG:'HK',MAC:'MO',AFG:'AF',PAK:'PK',IND:'IN',BAN:'BD',SRI:'LK',MDV:'MV',NEP:'NP',BHU:'BT',TJK:'TJ',UZB:'UZ',TKM:'TM',KGZ:'KG',KAZ:'KZ',MGL:'MN',SYR:'SY',LBN:'LB',ISR:'IL',PSE:'PS',JOR:'JO',IRQ:'IQ',KUW:'KW',BAH:'BH',OMA:'OM',YEM:'YE',SCO:'GB',NIR:'GB',FRO:'FO',ISL:'IS',LUX:'LU',AND:'AD',SMR:'SM',MLT:'MT',LIE:'LI',MON:'MC',VAT:'VA',GIB:'GI',BLR:'BY',MDA:'MD',GEO:'GE',ARM:'AM',AZE:'AZ',KOS:'XK',BIH:'BA',MNE:'ME',MKD:'MK',ALB:'AL',HUN:'HU',CZE:'CZ',LTU:'LT',LVA:'LV',EST:'EE',FIN:'FI',IRL:'IE',AUT:'AT' };
+const TEAM_NAME_TO_CODE = { 'argentina':'AR','australia':'AU','belgium':'BE','brazil':'BR','canada':'CA','chile':'CL','colombia':'CO','costa rica':'CR','croatia':'HR','denmark':'DK','ecuador':'EC','england':'GB','spain':'ES','france':'FR','germany':'DE','ghana':'GH','iran':'IR','italy':'IT','japan':'JP','south korea':'KR','korea republic':'KR','mexico':'MX','morocco':'MA','netherlands':'NL','nigeria':'NG','panama':'PA','peru':'PE','poland':'PL','portugal':'PT','qatar':'QA','saudi arabia':'SA','senegal':'SN','serbia':'RS','switzerland':'CH','tunisia':'TN','uruguay':'UY','usa':'US','united states':'US','wales':'GB','norway':'NO','sweden':'SE','ivory coast':'CI','turkey':'TR','china':'CN','ukraine':'UA','russia':'RU','slovakia':'SK','slovenia':'SI','algeria':'DZ','egypt':'EG','mali':'ML','gabon':'GA','dr congo':'CD','congo':'CG','south africa':'ZA','togo':'TG','equatorial guinea':'GQ','angola':'AO','cape verde':'CV','zimbabwe':'ZW','zambia':'ZM','tanzania':'TZ','kenya':'KE','uganda':'UG','gambia':'GM','guinea':'GN','madagascar':'MG','comoros':'KM','seychelles':'SC','mauritius':'MU','namibia':'NA','lesotho':'LS','botswana':'BW','eswatini':'SZ','mozambique':'MZ','malawi':'MW','libya':'LY','sudan':'SD','south sudan':'SS','ethiopia':'ET','eritrea':'ER','djibouti':'DJ','somalia':'SO','brunei':'BN','timor-leste':'TL','myanmar':'MM','thailand':'TH','laos':'LA','vietnam':'VN','cambodia':'KH','malaysia':'MY','singapore':'SG','indonesia':'ID','philippines':'PH','north korea':'KP','taiwan':'TW','hong kong':'HK','macau':'MO','afghanistan':'AF','pakistan':'PK','india':'IN','bangladesh':'BD','sri lanka':'LK','maldives':'MV','nepal':'NP','bhutan':'BT','tajikistan':'TJ','uzbekistan':'UZ','turkmenistan':'TM','kyrgyzstan':'KG','kazakhstan':'KZ','mongolia':'MN','syria':'SY','lebanon':'LB','israel':'IL','palestine':'PS','jordan':'JO','iraq':'IQ','kuwait':'KW','bahrain':'BH','oman':'OM','yemen':'YE','scotland':'GB','northern ireland':'GB','faroe islands':'FO','iceland':'IS','luxembourg':'LU','andorra':'AD','san marino':'SM','malta':'MT','liechtenstein':'LI','monaco':'MC','vatican city':'VA','gibraltar':'GI','belarus':'BY','moldova':'MD','georgia':'GE','armenia':'AM','azerbaijan':'AZ','kosovo':'XK','bosnia':'BA','montenegro':'ME','macedonia':'MK','north macedonia':'MK','albania':'AL','hungary':'HU','czech republic':'CZ','czechia':'CZ','lithuania':'LT','latvia':'LV','estonia':'EE','finland':'FI','ireland':'IE','austria':'AT' };
 
-// Map for full team names to 2-letter codes (Fallback for scraped text)
-const TEAM_NAME_TO_CODE = {
-  'argentina': 'AR', 'australia': 'AU', 'belgium': 'BE', 'brazil': 'BR', 'canada': 'CA', 'chile': 'CL', 'colombia': 'CO',
-  'costa rica': 'CR', 'croatia': 'HR', 'denmark': 'DK', 'ecuador': 'EC', 'england': 'GB', 'spain': 'ES', 'france': 'FR',
-  'germany': 'DE', 'ghana': 'GH', 'iran': 'IR', 'italy': 'IT', 'japan': 'JP', 'south korea': 'KR', 'korea republic': 'KR', 'mexico': 'MX',
-  'morocco': 'MA', 'netherlands': 'NL', 'nigeria': 'NG', 'panama': 'PA', 'peru': 'PE', 'poland': 'PL', 'portugal': 'PT',
-  'qatar': 'QA', 'saudi arabia': 'SA', 'senegal': 'SN', 'serbia': 'RS', 'switzerland': 'CH', 'tunisia': 'TN', 'uruguay': 'UY',
-  'usa': 'US', 'united states': 'US', 'wales': 'GB', 'norway': 'NO', 'sweden': 'SE', 'ivory coast': 'CI', 'turkey': 'TR', 'china': 'CN',
-  'ukraine': 'UA', 'russia': 'RU', 'slovakia': 'SK', 'slovenia': 'SI', 'algeria': 'DZ', 'egypt': 'EG', 'mali': 'ML', 'gabon': 'GA',
-  'dr congo': 'CD', 'congo': 'CG', 'south africa': 'ZA', 'togo': 'TG', 'equatorial guinea': 'GQ', 'angola': 'AO', 'cape verde': 'CV',
-  'zimbabwe': 'ZW', 'zambia': 'ZM', 'tanzania': 'TZ', 'kenya': 'KE', 'uganda': 'UG', 'gambia': 'GM', 'guinea': 'GN', 'madagascar': 'MG',
-  'comoros': 'KM', 'seychelles': 'SC', 'mauritius': 'MU', 'namibia': 'NA', 'lesotho': 'LS', 'botswana': 'BW', 'eswatini': 'SZ',
-  'mozambique': 'MZ', 'malawi': 'MW', 'libya': 'LY', 'sudan': 'SD', 'south sudan': 'SS', 'ethiopia': 'ET', 'eritrea': 'ER',
-  'djibouti': 'DJ', 'somalia': 'SO', 'brunei': 'BN', 'timor-leste': 'TL', 'myanmar': 'MM', 'thailand': 'TH', 'laos': 'LA',
-  'vietnam': 'VN', 'cambodia': 'KH', 'malaysia': 'MY', 'singapore': 'SG', 'indonesia': 'ID', 'philippines': 'PH', 'north korea': 'KP',
-  'taiwan': 'TW', 'hong kong': 'HK', 'macau': 'MO', 'afghanistan': 'AF', 'pakistan': 'PK', 'india': 'IN', 'bangladesh': 'BD',
-  'sri lanka': 'LK', 'maldives': 'MV', 'nepal': 'NP', 'bhutan': 'BT', 'tajikistan': 'TJ', 'uzbekistan': 'UZ', 'turkmenistan': 'TM',
-  'kyrgyzstan': 'KG', 'kazakhstan': 'KZ', 'mongolia': 'MN', 'syria': 'SY', 'lebanon': 'LB', 'israel': 'IL', 'palestine': 'PS',
-  'jordan': 'JO', 'iraq': 'IQ', 'kuwait': 'KW', 'bahrain': 'BH', 'oman': 'OM', 'yemen': 'YE', 'scotland': 'GB', 'northern ireland': 'GB',
-  'faroe islands': 'FO', 'iceland': 'IS', 'luxembourg': 'LU', 'andorra': 'AD', 'san marino': 'SM', 'malta': 'MT', 'liechtenstein': 'LI',
-  'monaco': 'MC', 'vatican city': 'VA', 'gibraltar': 'GI', 'belarus': 'BY', 'moldova': 'MD', 'georgia': 'GE', 'armenia': 'AM',
-  'azerbaijan': 'AZ', 'kosovo': 'XK', 'bosnia': 'BA', 'montenegro': 'ME', 'macedonia': 'MK', 'north macedonia': 'MK', 'albania': 'AL',
-  'hungary': 'HU', 'czech republic': 'CZ', 'czechia': 'CZ', 'lithuania': 'LT', 'latvia': 'LV', 'estonia': 'EE', 'finland': 'FI',
-  'ireland': 'IE', 'austria': 'AT'
-};
-
-// Returns an HTML image element for reliable cross-platform flags
-function codeToFlag(nameOrCode) {
+function codeToFlag(nameOrCode, size = 'normal') {
   if (!nameOrCode) return '';
   const c = String(nameOrCode).toUpperCase().trim();
   let code2 = COUNTRY_3TO2[c];
   if (!code2) code2 = TEAM_NAME_TO_CODE[c.toLowerCase()];
   if (!code2 && c.length >= 2 && c.length <= 3) code2 = c.substring(0, 2);
-  if (!code2) return '';
-  return `<img src="https://flagcdn.com/h40/${code2.toLowerCase()}.png" srcset="https://flagcdn.com/h80/${code2.toLowerCase()}.png 2x" alt="${c}">`;
+  if (!code2) return '<i class="fas fa-globe" style="color:#94a3b8"></i>';
+  
+  const cls = size === 'small' ? 'flag-img-small' : (size === 'large' ? 'flag-img-large' : 'flag-img');
+  return `<img class="${cls}" src="https://flagcdn.com/h40/${code2.toLowerCase()}.png" srcset="https://flagcdn.com/h80/${code2.toLowerCase()}.png 2x" alt="${c}">`;
 }
 
 let CHANNELS = [];
@@ -443,8 +420,8 @@ function injectMatchChannels(matches) {
     const id = 'wc-match-' + i;
     if (CHANNELS.some(c => c.id === id)) continue;
     const status = getMatchStatus(m);
-    const flag1 = codeToFlag(m.team1Code || m.team1);
-    const flag2 = codeToFlag(m.team2Code || m.team2);
+    const flag1 = codeToFlag(m.team1Code || m.team1, 'small');
+    const flag2 = codeToFlag(m.team2Code || m.team2, 'small');
     let icon = '📺', badge = '';
     if (status === 'live') { icon = '🔴'; badge = 'LIVE'; }
     else if (status === 'upcoming') { icon = '⏰'; badge = formatMatchTime(m.start); }
@@ -507,8 +484,9 @@ function processWCMatches(matches) {
 
 function showLiveMatch(m) {
   hideCountdown();
-  video.style.display = 'none';
   iframe.style.display = 'block';
+  video.style.display = 'none';
+  playerWrap.style.display = 'block';
   fetchWCStream(m);
   npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
   npName.textContent = m.team1 + ' vs ' + m.team2;
@@ -517,8 +495,9 @@ function showLiveMatch(m) {
 
 function showUpcomingMatch(m) {
   showCountdown(m);
-  video.style.display = 'none';
+  iframe.src = 'about:blank';
   iframe.style.display = 'none';
+  video.style.display = 'none';
   countdownOverlay.style.display = 'flex';
   
   npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
@@ -528,8 +507,9 @@ function showUpcomingMatch(m) {
 
 function showFinishedMatch(m) {
   hideCountdown();
-  video.style.display = 'none';
+  iframe.src = 'about:blank';
   iframe.style.display = 'none';
+  video.style.display = 'none';
   countdownOverlay.style.display = 'none';
   
   npFlag.innerHTML = codeToFlag(m.team1Code || m.team1) + ' ' + codeToFlag(m.team2Code || m.team2);
@@ -538,8 +518,8 @@ function showFinishedMatch(m) {
 }
 
 function showCountdown(m) {
-  cdFlag1.innerHTML = codeToFlag(m.team1Code || m.team1);
-  cdFlag2.innerHTML = codeToFlag(m.team2Code || m.team2);
+  cdFlag1.innerHTML = codeToFlag(m.team1Code || m.team1, 'large');
+  cdFlag2.innerHTML = codeToFlag(m.team2Code || m.team2, 'large');
   cdTeam1.textContent = m.team1;
   cdTeam2.textContent = m.team2;
   
@@ -591,9 +571,17 @@ function hideCountdown() {
 }
 
 function fetchWCStream(m) {
+  const status = getMatchStatus(m);
+  if (status === 'upcoming') {
+    const target = new Date(m.start).getTime();
+    if (target - Date.now() > 10 * 60 * 1000) {
+      showUpcomingMatch(m);
+      return;
+    }
+  }
+  
   if (!m.link) {
     showError('Stream not yet available for this match', 5000);
-    setTimeout(() => hideError(), 5000);
     return;
   }
   playEmbed(WORKER + '/stream?url=' + encodeURIComponent(m.link), m);
@@ -601,8 +589,9 @@ function fetchWCStream(m) {
 
 function playEmbed(url, m) {
   hideCountdown();
-  video.style.display = 'none';
+  countdownOverlay.style.display = 'none';
   iframe.style.display = 'block';
+  video.style.display = 'none';
   showOverlay('RESOLVING STREAM...');
   hideError();
   iframe.src = url;
@@ -631,15 +620,15 @@ async function fetchScoreboard() {
       const t2 = comp.competitors[1] || {};
       const t1Name = t1.team ? t1.team.displayName : '';
       const t2Name = t2.team ? t2.team.displayName : '';
-      const t1Flag = t1.team ? codeToFlag(t1.team.abbreviation) : '';
-      const t2Flag = t2.team ? codeToFlag(t2.team.abbreviation) : '';
+      const t1Flag = t1.team ? codeToFlag(t1.team.abbreviation, 'small') : '';
+      const t2Flag = t2.team ? codeToFlag(t2.team.abbreviation, 'small') : '';
       let statusText = '', statusClass = '';
       if (comp.status?.type) {
         statusText = comp.status.type.shortDetail || comp.status.type.detail || '';
         if (comp.status.type.state === 'in') statusClass = 'live';
         else if (comp.status.type.state === 'post') statusClass = 'final';
       }
-      html += `<div class="score-item"><div class="score-row"><div class="score-team"><span class="score-flag">${t1Flag}</span>${t1Name}</div><div class="score-val">${t1.score || '0'}</div></div><div class="score-row"><div class="score-team"><span class="score-flag">${t2Flag}</span>${t2Name}</div><div class="score-val">${t2.score || '0'}</div></div><div class="score-status ${statusClass}">${statusText}</div></div>`;
+      html += `<div class="score-item"><div class="score-row"><div class="score-team">${t1Flag}${t1Name}</div><div class="score-val">${t1.score || '0'}</div></div><div class="score-row"><div class="score-team">${t2Flag}${t2Name}</div><div class="score-val">${t2.score || '0'}</div></div><div class="score-status ${statusClass}">${statusText}</div></div>`;
     }
     html += '</div></div>';
     scoreboardSection.innerHTML = html;
@@ -651,23 +640,31 @@ async function fetchStandings() {
     const res = await fetch(WORKER + '/standings');
     if (!res.ok) return;
     const data = await res.json();
-    if (!data.children || data.children.length === 0) { standingsSection.innerHTML = ''; return; }
+    
+    const groups = data.children || [data];
+    if (!groups.length) { standingsSection.innerHTML = ''; return; }
+    
     let html = '<div class="espn-card"><div class="espn-title"><i class="fas fa-list-ol"></i> Group Standings</div>';
-    for (const group of data.children) {
-      if (!group.standings || !group.standings.entries) continue;
-      html += `<div style="margin-bottom:12px"><div style="font-weight:600;margin-bottom:6px;color:var(--accent)">${group.name || 'Group'}</div><table class="standings-table"><thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>`;
-      for (let i = 0; i < group.standings.entries.length; i++) {
-        const entry = group.standings.entries[i];
-        let gp = '', w = '', d = '', l = '', pts = '';
+    
+    for (const group of groups) {
+      const entries = group.standings?.entries || group.entries || [];
+      if (!entries.length) continue;
+      
+      html += `<div style="margin-bottom:16px"><div class="group-name">${group.name || 'Group'}</div><table class="standings-table"><thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead><tbody>`;
+      
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        let gp = '-', w = '-', d = '-', l = '-', pts = '-';
         for (const s of (entry.stats || [])) {
-          if (s.name === 'wins') w = s.value;
-          else if (s.name === 'ties' || s.name === 'draws') d = s.value;
-          else if (s.name === 'losses') l = s.value;
-          else if (s.name === 'gamesPlayed') gp = s.value;
-          else if (s.name === 'points') pts = s.value;
+          const name = s.name || s.abbreviation;
+          if (name === 'wins' || name === 'W') w = s.value;
+          else if (name === 'ties' || name === 'draws' || name === 'D') d = s.value;
+          else if (name === 'losses' || name === 'L') l = s.value;
+          else if (name === 'gamesPlayed' || name === 'GP') gp = s.value;
+          else if (name === 'points' || name === 'PTS') pts = s.value;
         }
-        const teamName = entry.team ? entry.team.displayName : '';
-        const teamFlag = entry.team ? codeToFlag(entry.team.abbreviation) : '';
+        const teamName = entry.team?.displayName || '';
+        const teamFlag = entry.team?.abbreviation ? codeToFlag(entry.team.abbreviation, 'small') : '';
         html += `<tr><td>${i + 1}</td><td><div class="standings-team">${teamFlag}${teamName}</div></td><td>${gp}</td><td>${w}</td><td>${d}</td><td>${l}</td><td><strong>${pts}</strong></td></tr>`;
       }
       html += '</tbody></table></div>';
